@@ -20,7 +20,7 @@ class Lexer:
         self.pos += 1
         if c == "\n":
             self.linha += 1
-            self.coluna += 1
+            self.coluna = 1
         else:
             self.coluna += 1
         return c
@@ -28,7 +28,7 @@ class Lexer:
     def _pular_espacos_e_comentarios(self) -> None:
         while not self._fim():
             c = self._peek()
-            if c in "\t\r\n":
+            if c in " \t\r\n":
                 self._avancar()
             elif c == "#":
                 while not self._fim() and self._peek() != "\n":
