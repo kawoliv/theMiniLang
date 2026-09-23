@@ -1,4 +1,4 @@
-from minilang.tokens import PALAVRAS_RESERVADAS, Token, TokenType
+import PALAVRAS_RESERVADAS, Token, TokenType
 
 class Lexer:
     def __init__(self, fonte: str):
