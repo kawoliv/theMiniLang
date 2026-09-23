@@ -27,6 +27,7 @@ class Lexer:
         else:
             self.coluna += 1
         return c
+
     def _e_letra(self, c: str) -> bool:
         """Letra que pode INICIAR uma palavra (aceita acento, por causa de 'senão')."""
         return c.isalpha()
@@ -77,8 +78,6 @@ class Lexer:
     # Laço principal
     # ------------------------------------------------------------------
 
-    
-
     def tokenizar(self) -> list[Token]:
         """Percorre todo o código-fonte e devolve a lista de tokens."""
         while True:
@@ -99,7 +98,68 @@ class Lexer:
             self._ler_palavra(linha, coluna)
         elif self._e_digito(c):
             self._ler_numero(linha, coluna)
+        
+        # --- Operadores com Lookahead (1 ou 2 caracteres) ---
+        elif c == '=':
+            self._avancar()
+            if self._peek() == '=':
+                self._avancar()
+                self.tokens.append(Token(TokenType.IGUAL, "==", linha, coluna))
+            else:
+                self.tokens.append(Token(TokenType.ATRIB, "=", linha, coluna))
+        elif c == '!':
+            self._avancar()
+            if self._peek() == '=':
+                self._avancar()
+                self.tokens.append(Token(TokenType.DIFERENTE, "!=", linha, coluna))
+            else:
+                # PROVISÓRIO: '!' sozinho é um erro léxico (será tratado na Etapa 5).
+                pass
+        elif c == '<':
+            self._avancar()
+            if self._peek() == '=':
+                self._avancar()
+                self.tokens.append(Token(TokenType.MENOR_IGUAL, "<=", linha, coluna))
+            else:
+                self.tokens.append(Token(TokenType.MENOR, "<", linha, coluna))
+        elif c == '>':
+            self._avancar()
+            if self._peek() == '=':
+                self._avancar()
+                self.tokens.append(Token(TokenType.MAIOR_IGUAL, ">=", linha, coluna))
+            else:
+                self.tokens.append(Token(TokenType.MAIOR, ">", linha, coluna))
+        
+        # --- Operadores de 1 caractere ---
+        elif c == '+':
+            self.tokens.append(Token(TokenType.MAIS, self._avancar(), linha, coluna))
+        elif c == '-':
+            self.tokens.append(Token(TokenType.MENOS, self._avancar(), linha, coluna))
+        elif c == '*':
+            self.tokens.append(Token(TokenType.MULT, self._avancar(), linha, coluna))
+        elif c == '/':
+            self.tokens.append(Token(TokenType.DIV, self._avancar(), linha, coluna))
+        elif c == '%':
+            self.tokens.append(Token(TokenType.MOD, self._avancar(), linha, coluna))
+        
+        # --- Delimitadores ---
+        elif c == '(':
+            self.tokens.append(Token(TokenType.ABRE_PAR, self._avancar(), linha, coluna))
+        elif c == ')':
+            self.tokens.append(Token(TokenType.FECHA_PAR, self._avancar(), linha, coluna))
+        elif c == '{':
+            self.tokens.append(Token(TokenType.ABRE_CHAVE, self._avancar(), linha, coluna))
+        elif c == '}':
+            self.tokens.append(Token(TokenType.FECHA_CHAVE, self._avancar(), linha, coluna))
+        elif c == ';':
+            self.tokens.append(Token(TokenType.PONTO_VIRGULA, self._avancar(), linha, coluna))
+        elif c == ':':
+            self.tokens.append(Token(TokenType.DOIS_PONTOS, self._avancar(), linha, coluna))
+        elif c == ',':
+            self.tokens.append(Token(TokenType.VIRGULA, self._avancar(), linha, coluna))
+        elif c == '.':
+            self.tokens.append(Token(TokenType.PONTO, self._avancar(), linha, coluna))
+        
         else:
-            # PROVISÓRIO: operadores e delimitadores entram na etapa 4,
-            # e os erros léxicos na etapa 5.
+            # PROVISÓRIO: erros léxicos entram na etapa 5.
             self._avancar()
