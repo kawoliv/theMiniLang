@@ -1,4 +1,4 @@
-import PALAVRAS_RESERVADAS, Token, TokenType
+from minilang.tokens import PALAVRAS_RESERVADAS, Token, TokenType
 
 class Lexer:
     def __init__(self, fonte: str):
@@ -7,6 +7,7 @@ class Lexer:
         self.linha = 1
         self.coluna = 1
         self.tokens: list[Token] = []
+        self.erros: list[str] = []
 
     def _fim(self) -> bool:
         """True se já lemos todo o código-fonte."""
@@ -62,7 +63,6 @@ class Lexer:
         while self._e_parte_palavra(self._peek()):
             self._avancar()
         lexema = self.fonte[inicio:self.pos]
-        # consulta na tabela: se não estiver lá, é identificador
         tipo = PALAVRAS_RESERVADAS.get(lexema, TokenType.IDENT)
         self.tokens.append(Token(tipo, lexema, linha, coluna))
 
@@ -113,8 +113,7 @@ class Lexer:
                 self._avancar()
                 self.tokens.append(Token(TokenType.DIFERENTE, "!=", linha, coluna))
             else:
-                # PROVISÓRIO: '!' sozinho é um erro léxico (será tratado na Etapa 5).
-                pass
+                self.erros.append(f"Erro léxico na linha {linha}, coluna {coluna}: caractere inesperado '!'")
         elif c == '<':
             self._avancar()
             if self._peek() == '=':
@@ -160,6 +159,7 @@ class Lexer:
         elif c == '.':
             self.tokens.append(Token(TokenType.PONTO, self._avancar(), linha, coluna))
         
+        # --- Captura de Erros Léxicos ---
         else:
-            # PROVISÓRIO: erros léxicos entram na etapa 5.
+            self.erros.append(f"Erro léxico na linha {linha}, coluna {coluna}: caractere inesperado '{c}'")
             self._avancar()
