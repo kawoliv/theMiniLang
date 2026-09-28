@@ -1,0 +1,17 @@
+# Exemplo Basico em MiniLang
+programa basico
+var
+  x, y, soma: inteiro;
+  status: booleano;
+{
+  leia(x);
+  leia(y);
+  soma = x + y;
+  status = verdadeiro;
+  se soma >= 10 {
+    escreva(soma);
+  } senao {
+    escreva(0);
+  }
+}
+fim.
