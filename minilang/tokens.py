@@ -1,8 +1,15 @@
+"""Especificação léxica da MiniLang: categorias de token e palavras reservadas.
+
+Este módulo não faz análise nenhuma; ele apenas define o *vocabulário*
+que o analisador léxico (lexer.py) produz e que o parser (M2) consome.
+"""
+
 from dataclasses import dataclass
 from enum import Enum, auto
 
 
 class TokenType(Enum):
+    """Todas as categorias de token reconhecidas pela MiniLang."""
 
     # --- Palavras reservadas (especificação mínima) ---
     PROGRAMA = auto()
@@ -20,42 +27,50 @@ class TokenType(Enum):
     OU = auto()
     NAO = auto()
     FIM = auto()
+
     # --- Palavras reservadas da extensão D (para, repita/ate) ---
     PARA = auto()
     ATE = auto()
     PASSO = auto()
     REPITA = auto()
+
     # --- Identificadores e literais ---
-    IDENT = auto()          
-    NUM_INT = auto()
-     # --- Operadores aritméticos ---
-    MAIS = auto()           # +
-    MENOS = auto()          # -
-    MULT = auto()           # *
-    DIV = auto()            # /
-    MOD = auto()            # %
+    IDENT = auto()        # letra (letra | dígito | _)*
+    NUM_INT = auto()      # dígito+
+
+    # --- Operadores aritméticos ---
+    MAIS = auto()         # +
+    MENOS = auto()        # -
+    MULT = auto()         # *
+    DIV = auto()          # /
+    MOD = auto()          # %
+
     # --- Operadores relacionais ---
-    IGUAL = auto()          # ==
-    DIFERENTE = auto()      # !=
-    MENOR = auto()          # <
-    MENOR_IGUAL = auto()    # <=
-    MAIOR = auto()          # >
-    MAIOR_IGUAL = auto()    # >=
+    IGUAL = auto()        # ==
+    DIFERENTE = auto()    # !=
+    MENOR = auto()        # <
+    MENOR_IGUAL = auto()  # <=
+    MAIOR = auto()        # >
+    MAIOR_IGUAL = auto()  # >=
+
     # --- Atribuição ---
-    ATRIB = auto()          # =
+    ATRIB = auto()        # =
+
     # --- Delimitadores ---
-    ABRE_PAR = auto()       # (
-    FECHA_PAR = auto()      # )
-    ABRE_CHAVE = auto()     # {
-    FECHA_CHAVE = auto()    # }
+    ABRE_PAR = auto()     # (
+    FECHA_PAR = auto()    # )
+    ABRE_CHAVE = auto()   # {
+    FECHA_CHAVE = auto()  # }
     PONTO_VIRGULA = auto()  # ;
-    DOIS_PONTOS = auto()    # :
-    VIRGULA = auto()        # ,
-    PONTO = auto()          # .
+    DOIS_PONTOS = auto()  # :
+    VIRGULA = auto()      # ,
+    PONTO = auto()        # .
+
     # --- Fim de arquivo ---
     EOF = auto()
 
-   
+
+# Tabela de palavras reservadas: lexema -> categoria.
 PALAVRAS_RESERVADAS = {
     "programa": TokenType.PROGRAMA,
     "var": TokenType.VAR,
@@ -81,7 +96,7 @@ PALAVRAS_RESERVADAS = {
     "repita": TokenType.REPITA,
 }
 
-# Agrupamento das categorias, usado para exibir a tabela de tokens.
+# Agrupamento das categorias, usado para classificar e exibir a tabela de tokens.
 _PALAVRAS = set(PALAVRAS_RESERVADAS.values())
 _OPERADORES = {
     TokenType.MAIS, TokenType.MENOS, TokenType.MULT, TokenType.DIV, TokenType.MOD,
@@ -123,5 +138,3 @@ class Token:
 
     def __str__(self) -> str:
         return f"{self.linha}:{self.coluna}\t{self.tipo.name}\t{self.lexema!r}"
-
-

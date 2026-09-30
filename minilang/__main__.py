@@ -1,8 +1,23 @@
-import sys
+"""Ponto de entrada da linha de comando para o compilador MiniLang.
+
+Uso:
+    py -m minilang <arquivo.mlg> [--tokens]
+"""
+
 import os
+import sys
+
 from minilang.lexer import Lexer
 
-def main():
+
+def main() -> None:
+    # Garante saída em UTF-8 no terminal
+    if sys.stdout.encoding and sys.stdout.encoding.lower() != "utf-8":
+        try:
+            sys.stdout.reconfigure(encoding="utf-8")
+        except AttributeError:
+            pass
+
     # Verifica se o utilizador passou os argumentos corretos
     if len(sys.argv) < 2:
         print("Uso: py -m minilang <arquivo.mlg> [--tokens]")
@@ -16,7 +31,7 @@ def main():
         print(f"Erro: O ficheiro '{caminho_arquivo}' não foi encontrado.")
         sys.exit(1)
 
-    # Lê o conteúdo do ficheiro-fonte
+    # Lê o conteúdo do ficheiro-fonte em UTF-8
     with open(caminho_arquivo, "r", encoding="utf-8") as f:
         codigo_fonte = f.read()
 
@@ -35,6 +50,7 @@ def main():
     if mostrar_tokens:
         for token in tokens:
             print(token)
+
 
 if __name__ == "__main__":
     main()

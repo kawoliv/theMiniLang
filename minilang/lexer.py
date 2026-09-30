@@ -1,4 +1,12 @@
+"""Analisador léxico para a linguagem MiniLang.
+
+Converte uma string contendo o código-fonte em uma sequência de Tokens,
+rastreando linhas, colunas e reportando erros léxicos encontrados.
+"""
+
+from minilang.errors import LexicalError
 from minilang.tokens import PALAVRAS_RESERVADAS, Token, TokenType
+
 
 class Lexer:
     def __init__(self, fonte: str):
@@ -13,11 +21,11 @@ class Lexer:
         """True se já lemos todo o código-fonte."""
         return self.pos >= len(self.fonte)
 
-    def _peek(self, k:int = 0) -> str:
+    def _peek(self, k: int = 0) -> str:
         """Espia o caractere k posições à frente SEM consumi-lo."""
         i = self.pos + k
-        return self.fonte[i] if i< len(self.fonte) else "\0"
-        
+        return self.fonte[i] if i < len(self.fonte) else "\0"
+
     def _avancar(self) -> str:
         """Consome o caractere atual, atualiza linha/coluna e o devolve."""
         c = self.fonte[self.pos]
@@ -30,17 +38,17 @@ class Lexer:
         return c
 
     def _e_letra(self, c: str) -> bool:
-        """Letra que pode INICIAR uma palavra (aceita acento, por causa de 'senão')."""
-        return c.isalpha()
+        """Letra ou sublinhado que pode INICIAR uma palavra ou identificador (inclui '_' e acentos)."""
+        return c.isalpha() or c == "_"
 
     def _e_digito(self, c: str) -> bool:
-        """Dígito decimal. Não usamos c.isdigit() porque ele aceita '²' e outros."""
+        """Dígito decimal [0-9]."""
         return "0" <= c <= "9"
 
     def _e_parte_palavra(self, c: str) -> bool:
-        """Caractere que pode CONTINUAR um identificador."""
-        return self._e_letra(c) or self._e_digito(c) or c == "_"
-    
+        """Caractere que pode CONTINUAR um identificador ou palavra reservada."""
+        return c.isalpha() or self._e_digito(c) or c == "_"
+
     def _pular_espacos_e_comentarios(self) -> None:
         """Descarta espaços, tabulações, quebras de linha e comentários '#'."""
         while not self._fim():
@@ -58,7 +66,7 @@ class Lexer:
     # ------------------------------------------------------------------
 
     def _ler_palavra(self, linha: int, coluna: int) -> None:
-        """Lê letra (letra | dígito | _)* e decide: palavra reservada ou identificador."""
+        """Lê letra (letra | dígito | _)* e decide se é palavra reservada ou identificador."""
         inicio = self.pos
         while self._e_parte_palavra(self._peek()):
             self._avancar()
@@ -67,12 +75,17 @@ class Lexer:
         self.tokens.append(Token(tipo, lexema, linha, coluna))
 
     def _ler_numero(self, linha: int, coluna: int) -> None:
-        """Lê dígito+ e gera um literal inteiro."""
+        """Lê dígitos consecutivos e gera um literal inteiro."""
         inicio = self.pos
         while self._e_digito(self._peek()):
             self._avancar()
         lexema = self.fonte[inicio:self.pos]
-        self.tokens.append(Token(TokenType.NUM_INT, lexema, linha, coluna))     
+        self.tokens.append(Token(TokenType.NUM_INT, lexema, linha, coluna))
+
+    def _adicionar_erro(self, linha: int, coluna: int, mensagem: str) -> None:
+        """Registra erro léxico mantendo compatibilidade com representação em string."""
+        erro = LexicalError(linha, coluna, mensagem)
+        self.erros.append(str(erro))
 
     # ------------------------------------------------------------------
     # Laço principal
@@ -85,9 +98,9 @@ class Lexer:
             if self._fim():
                 break
             linha, coluna = self.linha, self.coluna
-            self._proximo_token(linha,coluna)
+            self._proximo_token(linha, coluna)
 
-        self.tokens.append(Token(TokenType.EOF,"", self.linha, self.coluna))
+        self.tokens.append(Token(TokenType.EOF, "", self.linha, self.coluna))
         return self.tokens
 
     def _proximo_token(self, linha: int, coluna: int) -> None:
@@ -98,68 +111,68 @@ class Lexer:
             self._ler_palavra(linha, coluna)
         elif self._e_digito(c):
             self._ler_numero(linha, coluna)
-        
+
         # --- Operadores com Lookahead (1 ou 2 caracteres) ---
-        elif c == '=':
+        elif c == "=":
             self._avancar()
-            if self._peek() == '=':
+            if self._peek() == "=":
                 self._avancar()
                 self.tokens.append(Token(TokenType.IGUAL, "==", linha, coluna))
             else:
                 self.tokens.append(Token(TokenType.ATRIB, "=", linha, coluna))
-        elif c == '!':
+        elif c == "!":
             self._avancar()
-            if self._peek() == '=':
+            if self._peek() == "=":
                 self._avancar()
                 self.tokens.append(Token(TokenType.DIFERENTE, "!=", linha, coluna))
             else:
-                self.erros.append(f"Erro léxico na linha {linha}, coluna {coluna}: caractere inesperado '!'")
-        elif c == '<':
+                self._adicionar_erro(linha, coluna, "caractere inesperado '!'")
+        elif c == "<":
             self._avancar()
-            if self._peek() == '=':
+            if self._peek() == "=":
                 self._avancar()
                 self.tokens.append(Token(TokenType.MENOR_IGUAL, "<=", linha, coluna))
             else:
                 self.tokens.append(Token(TokenType.MENOR, "<", linha, coluna))
-        elif c == '>':
+        elif c == ">":
             self._avancar()
-            if self._peek() == '=':
+            if self._peek() == "=":
                 self._avancar()
                 self.tokens.append(Token(TokenType.MAIOR_IGUAL, ">=", linha, coluna))
             else:
                 self.tokens.append(Token(TokenType.MAIOR, ">", linha, coluna))
-        
+
         # --- Operadores de 1 caractere ---
-        elif c == '+':
+        elif c == "+":
             self.tokens.append(Token(TokenType.MAIS, self._avancar(), linha, coluna))
-        elif c == '-':
+        elif c == "-":
             self.tokens.append(Token(TokenType.MENOS, self._avancar(), linha, coluna))
-        elif c == '*':
+        elif c == "*":
             self.tokens.append(Token(TokenType.MULT, self._avancar(), linha, coluna))
-        elif c == '/':
+        elif c == "/":
             self.tokens.append(Token(TokenType.DIV, self._avancar(), linha, coluna))
-        elif c == '%':
+        elif c == "%":
             self.tokens.append(Token(TokenType.MOD, self._avancar(), linha, coluna))
-        
+
         # --- Delimitadores ---
-        elif c == '(':
+        elif c == "(":
             self.tokens.append(Token(TokenType.ABRE_PAR, self._avancar(), linha, coluna))
-        elif c == ')':
+        elif c == ")":
             self.tokens.append(Token(TokenType.FECHA_PAR, self._avancar(), linha, coluna))
-        elif c == '{':
+        elif c == "{":
             self.tokens.append(Token(TokenType.ABRE_CHAVE, self._avancar(), linha, coluna))
-        elif c == '}':
+        elif c == "}":
             self.tokens.append(Token(TokenType.FECHA_CHAVE, self._avancar(), linha, coluna))
-        elif c == ';':
+        elif c == ";":
             self.tokens.append(Token(TokenType.PONTO_VIRGULA, self._avancar(), linha, coluna))
-        elif c == ':':
+        elif c == ":":
             self.tokens.append(Token(TokenType.DOIS_PONTOS, self._avancar(), linha, coluna))
-        elif c == ',':
+        elif c == ",":
             self.tokens.append(Token(TokenType.VIRGULA, self._avancar(), linha, coluna))
-        elif c == '.':
+        elif c == ".":
             self.tokens.append(Token(TokenType.PONTO, self._avancar(), linha, coluna))
-        
+
         # --- Captura de Erros Léxicos ---
         else:
-            self.erros.append(f"Erro léxico na linha {linha}, coluna {coluna}: caractere inesperado '{c}'")
+            self._adicionar_erro(linha, coluna, f"caractere inesperado '{c}'")
             self._avancar()

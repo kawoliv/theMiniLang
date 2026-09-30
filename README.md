@@ -11,7 +11,7 @@ Compilador da linguagem **MiniLang**, desenvolvido para a A3 de Teoria da Comput
 
 | Marco | Conteúdo | Status |
 |---|---|---|
-| M1 | Analisador léxico | em desenvolvimento |
+| M1 | Analisador léxico | concluído |
 | M2 | Analisador sintático + AST | — |
 | M3 | Analisador semântico | — |
 | M4 | Back-end, otimização e relatório | — |
