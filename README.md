@@ -31,38 +31,29 @@ docs/        documentação (AFD, notas de marco)
 
 ## Como Executar o Compilador (CLI)
 
-O analisador léxico da MiniLang pode ser executado diretamente via terminal utilizando o módulo Python `minilang`:
+O compilador MiniLang oferece execução direta via script unificado na raiz (`minilang.py`) e também via módulo (`minilang`):
 
-### Sintaxe básica
+### 1. Execução direta (Padrão Oficial do Edital)
 
 ```bash
-python -m minilang <caminho_do_arquivo.mlg> [--tokens]
+# Exibir a tabela detalhada de tokens (Marco 1)
+python minilang.py exemplos/validos/fatorial.mlg --tokens
+
+# Validar programas com a Extensão D
+python minilang.py exemplos/validos/exemplo_para.mlg --tokens
+python minilang.py exemplos/validos/exemplo_repita.mlg --tokens
+
+# Testar detecção de erros com posição precisa [LÉXICO] Linha L, Coluna C
+python minilang.py exemplos/invalidos/caractere_invalido.mlg
 ```
 
-> **Dica (Windows):** Você também pode utilizar o executável `py`:
-> ```cmd
-> py -m minilang <caminho_do_arquivo.mlg> [--tokens]
-> ```
+### 2. Execução alternativa via módulo Python
 
-### Exemplos de uso
+```bash
+python -m minilang exemplos/validos/fatorial.mlg --tokens
+```
 
-1. **Exibir a lista de tokens reconhecidos:**
-   ```bash
-   python -m minilang exemplos/validos/fatorial.mlg --tokens
-   ```
-   *Saída formatada contendo `LINHA:COLUNA  TIPO_TOKEN  'LEXEMA'`.*
-
-2. **Validar programa com suporte à Extensão D (`para`, `repita/ate`):**
-   ```bash
-   python -m minilang exemplos/validos/exemplo_para.mlg --tokens
-   python -m minilang exemplos/validos/exemplo_repita.mlg --tokens
-   ```
-
-3. **Verificar detecção e tratamento de erros léxicos:**
-   ```bash
-   python -m minilang exemplos/invalidos/caractere_invalido.mlg --tokens
-   ```
-   *Exibirá as mensagens de erro detalhadas com linha e coluna exatas.*
+> **Dica (Windows):** Você também pode substituir `python` por `py`. Suporta extensões `.mlg` e `.ml`.
 
 ## Execução dos Testes Automatizados
 
