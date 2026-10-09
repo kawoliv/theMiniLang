@@ -129,6 +129,38 @@ class TestLexer(unittest.TestCase):
         self.assertEqual(categoria(TokenType.NUM_INT), "literal inteiro")
         self.assertEqual(categoria(TokenType.EOF), "fim de arquivo")
 
+    def test_extensao_d_com_acento(self):
+        fonte = "para i = 1 até 10 repita"
+        lexer = Lexer(fonte)
+        tokens = lexer.tokenizar()
+        self.assertEqual(len(lexer.erros), 0)
+        tipos = [t.tipo for t in tokens[:-1]]
+        self.assertEqual(tipos, [TokenType.PARA, TokenType.IDENT, TokenType.ATRIB, TokenType.NUM_INT, TokenType.ATE, TokenType.NUM_INT, TokenType.REPITA])
+
+    def test_atributos_semanticos_valor(self):
+        fonte = "x = 42; flag = verdadeiro; flag2 = falso;"
+        lexer = Lexer(fonte)
+        tokens = lexer.tokenizar()
+        self.assertEqual(len(lexer.erros), 0)
+        # x -> IDENT com valor "x"
+        self.assertEqual(tokens[0].valor, "x")
+        # 42 -> NUM_INT com valor 42 (int nativo)
+        self.assertEqual(tokens[2].valor, 42)
+        self.assertIsInstance(tokens[2].valor, int)
+        # verdadeiro -> VERDADEIRO com valor True (bool nativo)
+        self.assertEqual(tokens[6].valor, True)
+        self.assertIsInstance(tokens[6].valor, bool)
+        # falso -> FALSO com valor False (bool nativo)
+        self.assertEqual(tokens[10].valor, False)
+        self.assertIsInstance(tokens[10].valor, bool)
+
+    def test_formato_erro_padrao_oficial_lexico(self):
+        fonte = "var a @ 10;"
+        lexer = Lexer(fonte)
+        tokens = lexer.tokenizar()
+        self.assertEqual(len(lexer.erros), 1)
+        self.assertTrue(lexer.erros[0].startswith("[LÉXICO] Linha 1, Coluna 7:"))
+
 
 if __name__ == "__main__":
     unittest.main()
