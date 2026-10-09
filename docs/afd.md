@@ -42,7 +42,7 @@ $$\text{comentário} \to \#[\text{^\backslash n}]*$$
 | | `NAO` | `não` $\mid$ `nao` | Operador lógico de negação |
 | | `FIM` | `fim` | Fim do bloco principal |
 | **Extensão D** | `PARA` | `para` | Início do laço determinado |
-| | `ATE` | `ate` | Limite do laço para/repita |
+| | `ATE` | `ate` $\mid$ `até` | Limite do laço para/repita |
 | | `PASSO` | `passo` | Incremento opcional do laço |
 | | `REPITA` | `repita` | Início do laço pós-testado |
 | **Identificadores** | `IDENT` | $\text{letra\_ou\_sublinhado} \cdot (\text{caractere\_ident})^*$ | Nomes de variáveis e funções (ex.: `x`, `soma1`, `_contador`) |
@@ -206,9 +206,8 @@ Na tabela:
 ## 4. Tratamento de Erros e Recuperação
 
 O analisador léxico da MiniLang implementa **recuperação de erros não-panicosa (resiliente)**:
-1. **Não interrupção**: Ao encontrar um símbolo inválido (como `@`, `$` ou `!` desacompanhado de `=`), o erro é registrado em uma lista de erros contendo:
-   - Número da **linha**;
-   - Número da **coluna** inicial;
-   - Mensagem explicativa.
+1. **Não interrupção**: Ao encontrar um símbolo inválido (como `@`, `$` ou `!` desacompanhado de `=`), o erro é registrado no padrão canônico do edital:
+   - Formato oficial: `[LÉXICO] Linha L, Coluna C: Descrição detalhada`;
+   - Registrado via classe `LexicalError` sem interromper abruptamente a análise.
 2. **Avanço**: O caractere causador do erro é descartado/consumido e o scanner retorna imediatamente ao estado inicial $S_0$ para continuar processando os tokens subsequentes.
 3. Isso possibilita reportar múltiplos erros em uma única passagem pelo código-fonte (conforme demonstrado no caso de teste `caractere_invalido.mlg`).
