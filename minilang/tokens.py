@@ -6,6 +6,7 @@ que o analisador léxico (lexer.py) produz e que o parser (M2) consome.
 
 from dataclasses import dataclass
 from enum import Enum, auto
+from typing import Any
 
 
 class TokenType(Enum):
@@ -92,6 +93,7 @@ PALAVRAS_RESERVADAS = {
     # Extensão D
     "para": TokenType.PARA,
     "ate": TokenType.ATE,
+    "até": TokenType.ATE,
     "passo": TokenType.PASSO,
     "repita": TokenType.REPITA,
 }
@@ -126,15 +128,18 @@ def categoria(tipo: TokenType) -> str:
 
 @dataclass(frozen=True)
 class Token:
-    """Unidade léxica: categoria, texto original e posição no código-fonte.
+    """Unidade léxica: categoria, texto original, posição no código-fonte e valor de atributo.
 
     linha e coluna começam em 1 e indicam o *primeiro* caractere do lexema.
+    valor armazena o valor nativo do literal (ex: int, bool) ou o identificador.
     """
 
     tipo: TokenType
     lexema: str
     linha: int
     coluna: int
+    valor: Any = None
 
     def __str__(self) -> str:
-        return f"{self.linha}:{self.coluna}\t{self.tipo.name}\t{self.lexema!r}"
+        valor_str = f"\tvalor={self.valor!r}" if self.valor is not None else ""
+        return f"{self.linha}:{self.coluna}\t{self.tipo.name}\t{self.lexema!r}{valor_str}"

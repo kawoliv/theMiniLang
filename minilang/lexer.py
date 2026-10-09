@@ -72,7 +72,14 @@ class Lexer:
             self._avancar()
         lexema = self.fonte[inicio:self.pos]
         tipo = PALAVRAS_RESERVADAS.get(lexema, TokenType.IDENT)
-        self.tokens.append(Token(tipo, lexema, linha, coluna))
+        valor = None
+        if tipo == TokenType.VERDADEIRO:
+            valor = True
+        elif tipo == TokenType.FALSO:
+            valor = False
+        elif tipo == TokenType.IDENT:
+            valor = lexema
+        self.tokens.append(Token(tipo, lexema, linha, coluna, valor))
 
     def _ler_numero(self, linha: int, coluna: int) -> None:
         """Lê dígitos consecutivos e gera um literal inteiro."""
@@ -80,7 +87,8 @@ class Lexer:
         while self._e_digito(self._peek()):
             self._avancar()
         lexema = self.fonte[inicio:self.pos]
-        self.tokens.append(Token(TokenType.NUM_INT, lexema, linha, coluna))
+        valor = int(lexema)
+        self.tokens.append(Token(TokenType.NUM_INT, lexema, linha, coluna, valor))
 
     def _adicionar_erro(self, linha: int, coluna: int, mensagem: str) -> None:
         """Registra erro léxico mantendo compatibilidade com representação em string."""
