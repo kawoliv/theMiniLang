@@ -9,6 +9,7 @@ Equipe:
     - Daniel Costa
     - João Spinola Falcão
     - Pedro Adaime Ribeiro
+    - Isabelle Maciel
 """
 
 import argparse
