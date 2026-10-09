@@ -12,7 +12,7 @@
 - Daniel Costa (`@Danncss`)
 - João Spinola Falcão (RA: `12723116405` | `@Falc01`)
 - Pedro Adaime Ribeiro (RA: `12723119338` | `@pedrobelane`)
-- Isabelle Maciel
+- Isabelle Maciel dos Santos (RA: `12723118051` | `@isabellesmaciel`)
 
 ---
 
