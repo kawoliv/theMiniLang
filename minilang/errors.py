@@ -12,4 +12,4 @@ class LexicalError:
     mensagem: str
 
     def __str__(self) -> str:
-        return f"Erro léxico na linha {self.linha}, coluna {self.coluna}: {self.mensagem}"
+        return f"[LÉXICO] Linha {self.linha}, Coluna {self.coluna}: {self.mensagem}"
