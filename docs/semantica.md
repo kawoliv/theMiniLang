@@ -122,9 +122,9 @@ Todo nó `Expressao` recebe no campo `tipo` o tipo inferido (`inteiro`, `boolean
 A opção `--ast` mostra a árvore já anotada:
 
 ```
-└── valor: Binaria '*' : inteiro  [11:15]
-    ├── esq: Identificador 'fat' : inteiro  [11:11]
-    └── dir: Identificador 'i' : inteiro  [11:17]
+└── valor: Binaria '*' : inteiro  [10:15]          (py minilang.py exemplos/validos/fatorial.mlg --ast)
+    ├── esq: Identificador 'fat' : inteiro  [10:11]
+    └── dir: Identificador 'i' : inteiro  [10:17]
 ```
 
 O back-end (M4) vai usar essas anotações e a tabela de símbolos para gerar o código de três

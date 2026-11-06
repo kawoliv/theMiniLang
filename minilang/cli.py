@@ -3,10 +3,12 @@
 Usado tanto por `py minilang.py ...` (raiz do projeto) quanto por
 `py -m minilang ...`. Executa as fases em sequência:
 
-    código-fonte -> Lexer (M1) -> Parser + AST (M2) -> [M3, M4: a fazer]
+    código-fonte -> Lexer (M1) -> Parser + AST (M2) -> Semântica (M3) -> [M4: a fazer]
 
-As fases continuam mesmo depois de um erro, para que todos os problemas
-apareçam em uma única execução; no fim, se houve erro, sai com código 1.
+Léxico e sintático continuam mesmo depois de um erro, para que todos os
+problemas apareçam em uma única execução. A semântica só roda quando a AST
+está completa (sem erros léxicos/sintáticos). Se houve erro, sai com código 1;
+avisos não impedem a compilação.
 """
 
 import argparse
@@ -16,9 +18,10 @@ from pathlib import Path
 from minilang.arvore import formatar_arvore
 from minilang.lexer import Lexer
 from minilang.parser import analisar_sintaxe
+from minilang.semantico import analisar_semantica
 from minilang.tokens import TokenType, categoria
 
-VERSAO = "MiniLang Compiler v0.3.0 (Marco 2 - Sintático + AST)"
+VERSAO = "MiniLang Compiler v0.4.0 (Marco 3 - Semântica)"
 
 
 def _configurar_utf8() -> None:
@@ -54,8 +57,8 @@ def _criar_argumentos() -> argparse.ArgumentParser:
     )
     parser.add_argument("arquivo", nargs="?", help="Caminho do código-fonte MiniLang (.mlg ou .ml)")
     parser.add_argument("--tokens", action="store_true", help="Exibe a tabela de tokens (M1)")
-    parser.add_argument("--ast", action="store_true", help="Exibe a Árvore Sintática Abstrata (M2)")
-    parser.add_argument("--symbols", action="store_true", help="Exibe a Tabela de Símbolos (M3, ainda não implementado)")
+    parser.add_argument("--ast", action="store_true", help="Exibe a Árvore Sintática Abstrata anotada com tipos (M2/M3)")
+    parser.add_argument("--symbols", action="store_true", help="Exibe a Tabela de Símbolos (M3)")
     parser.add_argument("--optimize", action="store_true", help="Aplica otimizações (M4, ainda não implementado)")
     parser.add_argument("--version", action="version", version=VERSAO)
     return parser
@@ -92,22 +95,31 @@ def main(argv=None) -> None:
 
     erros = lexer.erros + erros_sintaticos
     if erros:
-        print(f"Erros encontrados em {caminho.name}:", file=sys.stderr)
-        for erro in erros:
-            print(f"  {erro}", file=sys.stderr)
-        print(
-            f"\n[FALHA] Compilação interrompida: {len(lexer.erros)} erro(s) léxico(s) "
-            f"e {len(erros_sintaticos)} erro(s) sintático(s).",
-            file=sys.stderr,
-        )
-        sys.exit(1)
+        _falhar(caminho.name, erros, f"{len(lexer.erros)} erro(s) léxico(s) e "
+                                     f"{len(erros_sintaticos)} erro(s) sintático(s)")
+
+    # --- M3: análise semântica (a AST está completa) ---
+    tabela, erros_semanticos, avisos = analisar_semantica(programa)
 
     if args.ast:
         print(formatar_arvore(programa))
+    if args.symbols:
+        print(tabela.formatar())
+    if args.optimize:
+        print("[AVISO] --optimize ainda não está disponível (M4).", file=sys.stderr)
 
-    for opcao, marco in (("symbols", "M3"), ("optimize", "M4")):
-        if getattr(args, opcao):
-            print(f"[AVISO] --{opcao} ainda não está disponível ({marco}).", file=sys.stderr)
+    for aviso in avisos:
+        print(aviso, file=sys.stderr)
+    if erros_semanticos:
+        _falhar(caminho.name, erros_semanticos, f"{len(erros_semanticos)} erro(s) semântico(s)")
 
-    print(f"[SUCESSO] {caminho.name}: análise léxica e sintática concluídas sem erros "
-          f"({len(tokens)} tokens).")
+    print(f"[SUCESSO] {caminho.name}: análise léxica, sintática e semântica concluídas sem erros "
+          f"({len(tokens)} tokens, {len(tabela.todos)} variáveis, {len(avisos)} aviso(s)).")
+
+
+def _falhar(nome_arquivo: str, erros: list[str], resumo: str) -> None:
+    print(f"Erros encontrados em {nome_arquivo}:", file=sys.stderr)
+    for erro in erros:
+        print(f"  {erro}", file=sys.stderr)
+    print(f"\n[FALHA] Compilação interrompida: {resumo}.", file=sys.stderr)
+    sys.exit(1)
