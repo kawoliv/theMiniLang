@@ -108,8 +108,10 @@ def main(argv=None) -> None:
     if args.optimize:
         print("[AVISO] --optimize ainda não está disponível (M4).", file=sys.stderr)
 
+    sys.stdout.flush()                      # mantém a ordem entre stdout e stderr no terminal
     for aviso in avisos:
         print(aviso, file=sys.stderr)
+    sys.stderr.flush()
     if erros_semanticos:
         _falhar(caminho.name, erros_semanticos, f"{len(erros_semanticos)} erro(s) semântico(s)")
 
