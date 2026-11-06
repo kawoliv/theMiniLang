@@ -12,7 +12,7 @@ Compilador da linguagem **MiniLang**, desenvolvido para a A3 de Teoria da Comput
 | Marco | Conteúdo | Status |
 |---|---|---|
 | M1 | Analisador léxico | concluído |
-| M2 | Analisador sintático + AST | — |
+| M2 | Analisador sintático + AST | concluído |
 | M3 | Analisador semântico | — |
 | M4 | Back-end, otimização e relatório | — |
 
@@ -45,12 +45,22 @@ python minilang.py exemplos/validos/exemplo_repita.mlg --tokens
 
 # Testar detecção de erros com posição precisa [LÉXICO] Linha L, Coluna C
 python minilang.py exemplos/invalidos/caractere_invalido.mlg
+
+# Exibir a Árvore Sintática Abstrata (Marco 2)
+python minilang.py exemplos/validos/fatorial.mlg --ast
+python minilang.py exemplos/validos/dangling_else.mlg --ast
+
+# Erros sintáticos com recuperação: vários erros [SINTÁTICO] em uma execução
+python minilang.py exemplos/invalidos/sintatico_multiplos_erros.mlg
 ```
+
+Sem opções, o compilador roda as fases implementadas e informa sucesso (código de saída 0) ou
+lista todos os erros encontrados (código de saída 1).
 
 ### 2. Execução alternativa via módulo Python
 
 ```bash
-python -m minilang exemplos/validos/fatorial.mlg --tokens
+python -m minilang exemplos/validos/fatorial.mlg --ast
 ```
 
 > **Dica (Windows):** Você também pode substituir `python` por `py`. Suporta extensões `.mlg` e `.ml`.
@@ -67,3 +77,8 @@ python -m unittest discover -s tests -v
 
 - [docs/afd.md](docs/afd.md): Especificação formal das Expressões Regulares, Diagrama Mermaid e Tabela de Transições do AFD.
 - [docs/nota_M1.md](docs/nota_M1.md): Nota descritiva do Marco M1 contendo decisões de projeto, estrutura, testes e declaração de uso de IA.
+
+## Documentação do Marco M2
+
+- [docs/gramatica.md](docs/gramatica.md): Gramática EBNF, classificação na Hierarquia de Chomsky, precedência e associatividade, *dangling else*, nós da AST e estratégia de recuperação de erros.
+- [docs/nota_M2.md](docs/nota_M2.md): Nota do Marco M2 com decisões de projeto, testes, limitações e declaração de uso de IA.
