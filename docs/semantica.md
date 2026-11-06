@@ -77,7 +77,7 @@ Todos seguem o padrão `[SEMÂNTICO] Linha L, Coluna C: descrição`.
 | `leia` em identificador não declarado | `'leia' em identificador não declarado 'k'` |
 | redeclaração | `variável 'x' já declarada na linha 3, coluna 3` |
 | atribuição com tipos incompatíveis | `tipos incompatíveis: não é possível atribuir booleano à variável 'x' (inteiro)` |
-| condição não booleana | `a condição do 'se' deve ser booleana, mas é do tipo inteiro` |
+| condição não booleana | `a condição do 'se' deve ser do tipo booleano, mas é do tipo inteiro` |
 | operador aritmético com booleano | `operador '+' exige operandos inteiros, mas o operando direito é booleano` |
 | operador lógico com inteiro | `operador 'e' exige operandos booleanos, mas o operando esquerdo é inteiro` |
 | comparação de tipos diferentes | `operador '==' compara inteiro com booleano; os dois lados devem ter o mesmo tipo` |

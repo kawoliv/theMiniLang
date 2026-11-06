@@ -9,8 +9,8 @@ var
   z = (1 + 2) * 3 % 4;         # ((1 + 2) * 3) % 4    parênteses
   x = - - y;                   # -(-y)                unário à direita
   p = x + 1 > y * 2;           # (x + 1) > (y * 2)
-  q = p ou x == 1 e não r;     # p ou ((x == 1) e (não r))
   r = não (x < y) e y <= z;    # (não (x < y)) e (y <= z)
+  q = p ou x == 1 e não r;     # p ou ((x == 1) e (não r))
   escreva(x, y, z);
   escreva(p, q, r);
 }
