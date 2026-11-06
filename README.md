@@ -13,7 +13,7 @@ Compilador da linguagem **MiniLang**, desenvolvido para a A3 de Teoria da Comput
 |---|---|---|
 | M1 | Analisador léxico | concluído |
 | M2 | Analisador sintático + AST | concluído |
-| M3 | Analisador semântico | — |
+| M3 | Analisador semântico | concluído |
 | M4 | Back-end, otimização e relatório | — |
 
 ## Estrutura
@@ -22,7 +22,7 @@ Compilador da linguagem **MiniLang**, desenvolvido para a A3 de Teoria da Comput
 minilang/    código-fonte do compilador
 tests/       testes automatizados
 exemplos/    programas MiniLang válidos e inválidos
-docs/        documentação (AFD, notas de marco)
+docs/        documentação (AFD, gramática, semântica, notas de marco)
 ```
 
 ## Requisitos
@@ -52,10 +52,18 @@ python minilang.py exemplos/validos/dangling_else.mlg --ast
 
 # Erros sintáticos com recuperação: vários erros [SINTÁTICO] em uma execução
 python minilang.py exemplos/invalidos/sintatico_multiplos_erros.mlg
+
+# Tabela de símbolos e AST anotada com tipos (Marco 3)
+python minilang.py exemplos/validos/fatorial.mlg --symbols --ast
+
+# Erros semânticos [SEMÂNTICO] e avisos (variável não inicializada / não usada)
+python minilang.py exemplos/invalidos/semantico_tipos.mlg
+python minilang.py exemplos/validos/avisos_inicializacao.mlg
 ```
 
-Sem opções, o compilador roda as fases implementadas e informa sucesso (código de saída 0) ou
-lista todos os erros encontrados (código de saída 1).
+Sem opções, o compilador roda as fases implementadas (léxica, sintática e semântica) e informa
+sucesso (código de saída 0) ou lista todos os erros encontrados (código de saída 1). Avisos são
+exibidos, mas não impedem a compilação.
 
 ### 2. Execução alternativa via módulo Python
 
@@ -82,3 +90,8 @@ python -m unittest discover -s tests -v
 
 - [docs/gramatica.md](docs/gramatica.md): Gramática EBNF, classificação na Hierarquia de Chomsky, precedência e associatividade, *dangling else*, nós da AST e estratégia de recuperação de erros.
 - [docs/nota_M2.md](docs/nota_M2.md): Nota do Marco M2 com decisões de projeto, testes, limitações e declaração de uso de IA.
+
+## Documentação do Marco M3
+
+- [docs/semantica.md](docs/semantica.md): Tabela de símbolos, sistema de tipos, regras dos comandos, erros e avisos detectados, análise de inicialização e anotação da AST.
+- [docs/nota_M3.md](docs/nota_M3.md): Nota do Marco M3 com cobertura da rubrica, decisões de projeto, limitações e declaração de uso de IA.
