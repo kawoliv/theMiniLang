@@ -404,7 +404,10 @@ class Parser:
     def _repita(self) -> Repita:
         repita = self._avancar()
         comandos = self._lista_comandos(frozenset({T.ATE}))
-        corpo = Bloco(comandos, linha=repita.linha, coluna=repita.coluna)
+        if len(comandos) == 1 and isinstance(comandos[0], Bloco):
+            corpo = comandos[0]          # forma 'repita { ... } ate': evita Bloco dentro de Bloco
+        else:
+            corpo = Bloco(comandos, linha=repita.linha, coluna=repita.coluna)
         self._espera(T.ATE, f" para encerrar o 'repita' da linha {repita.linha}")
         condicao = self._expressao()
         self._fim_comando()
