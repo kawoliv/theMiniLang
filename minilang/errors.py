@@ -30,3 +30,19 @@ class SyntacticError(Exception):
 
     def __str__(self) -> str:
         return f"[SINTÁTICO] Linha {self.linha}, Coluna {self.coluna}: {self.mensagem}"
+
+
+@dataclass
+class SemanticError:
+    """Erro (ou aviso) semântico com linha, coluna e mensagem.
+
+    Não é exceção: o analisador semântico registra o problema e continua
+    percorrendo a AST, para reportar todos os erros de uma vez.
+    """
+
+    linha: int
+    coluna: int
+    mensagem: str
+
+    def __str__(self) -> str:
+        return f"[SEMÂNTICO] Linha {self.linha}, Coluna {self.coluna}: {self.mensagem}"
