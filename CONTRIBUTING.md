@@ -14,7 +14,7 @@ O projeto é desenvolvido de forma cumulativa e colaborativa ao longo do semestr
 | 2 | **Pedro Adaime Ribeiro** | `12723119338` | [`@pedrobelane`](https://github.com/pedrobelane) |
 | 3 | **Isabelle Maciel dos Santos** | `12723118051` | [`@isabellesmaciel`](https://github.com/isabellesmaciel) |
 | 4 | **Kawan Oliveira** | `—` | [`@kawoliv`](https://github.com/kawoliv) |
-| 5 | **João Guilherme Perrone Hohlenwerger** | `—` | [`@joaohohlenwerger`](https://github.com/joaohohlenwerger) |
+| 5 | **João Guilherme Perrone Hohlenwerger** | `1272328057` | [`@joaohoh`](https://github.com/joaohoh) |
 | 6 | **Daniel Costa** | `—` | [`@Danncss`](https://github.com/Danncss) |
 
 > *Nota: Os integrantes podem preencher e atualizar seus respectivos RAs e links de perfil diretamente nesta tabela.*
