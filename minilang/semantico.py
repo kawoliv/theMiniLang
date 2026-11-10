@@ -115,7 +115,8 @@ class AnalisadorSemantico(Visitante):
                 self._avisos.append(SemanticError(
                     simbolo.linha, simbolo.coluna, f"aviso: variável '{simbolo.nome}' declarada e nunca usada"
                 ))
-        self.tabela.sair_escopo()
+        # O escopo 'global' NÃO é desempilhado aqui para que o M4 (Back-End)
+        # e o CLI possam consultar tabela.buscar() e tabela.escopo_atual normalmente.
 
     def visitar_DeclVar(self, no: DeclVar) -> None:
         anterior = self.tabela.buscar_local(no.nome)

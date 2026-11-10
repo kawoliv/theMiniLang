@@ -8,7 +8,7 @@ from pathlib import Path
 from minilang.arvore import Binaria, Expressao, Visitante
 from minilang.lexer import Lexer
 from minilang.parser import analisar_sintaxe
-from minilang.semantico import analisar_semantica
+from minilang.semantico import AnalisadorSemantico, analisar_semantica
 
 RAIZ = Path(__file__).resolve().parent.parent
 EXEMPLOS = RAIZ / "exemplos"
@@ -82,6 +82,27 @@ class TestTabelaDeSimbolos(unittest.TestCase):
         texto = tabela.formatar()
         self.assertIn("TABELA DE SÍMBOLOS", texto)
         self.assertRegex(texto, r"a\s+\| booleano\s+\| global\s+\|\s+0 \| 3:5")
+
+    def test_escopo_global_permanece_ativo_apos_analise(self):
+        """Garante que o escopo global não seja descartado no fim da análise, permitindo uso no M4."""
+        fonte = """programa teste
+var x: inteiro;
+{
+    x = 10;
+}
+fim."""
+        tokens = Lexer(fonte).tokenizar()
+        programa, erros_sint = analisar_sintaxe(tokens)
+        self.assertEqual(len(erros_sint), 0)
+
+        analisador = AnalisadorSemantico()
+        tabela = analisador.analisar(programa)
+
+        self.assertEqual(len(analisador.erros), 0)
+        self.assertGreater(len(tabela.escopos), 0, "A pilha de escopos não pode estar vazia")
+        simbolo_x = tabela.buscar("x")
+        self.assertIsNotNone(simbolo_x, "tabela.buscar('x') deve encontrar a variável declarada")
+        self.assertEqual(simbolo_x.tipo, "inteiro")
 
 
 class TestErrosObrigatorios(unittest.TestCase):
