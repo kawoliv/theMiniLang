@@ -38,7 +38,7 @@ class TestLexer(unittest.TestCase):
         self.assertIn(TokenType.REPITA, tipos)
 
     def test_identificadores_e_numeros(self):
-        fonte = "x1 = 42 + _var2"
+        fonte = "x1 = 42 + var_2"
         lexer = Lexer(fonte)
         tokens = lexer.tokenizar()
         self.assertEqual(len(lexer.erros), 0)
@@ -49,7 +49,27 @@ class TestLexer(unittest.TestCase):
         self.assertEqual(tokens[2].lexema, "42")
         self.assertEqual(tokens[3].tipo, TokenType.MAIS)
         self.assertEqual(tokens[4].tipo, TokenType.IDENT)
-        self.assertEqual(tokens[4].lexema, "_var2")
+        self.assertEqual(tokens[4].lexema, "var_2")
+
+    def test_rejeita_identificador_iniciado_por_sublinhado_ou_numero(self):
+        # Identificador iniciado por _ deve gerar erro léxico e consumir o lexema inteiro
+        lexer1 = Lexer("_variavel = 10")
+        tokens1 = lexer1.tokenizar()
+        self.assertEqual(len(lexer1.erros), 1, "Deveria rejeitar identificador iniciado com '_'")
+        self.assertIn("identificador malformado '_variavel'", lexer1.erros[0])
+        self.assertEqual([t.tipo for t in tokens1[:-1]], [TokenType.ATRIB, TokenType.NUM_INT])
+
+        # Identificador iniciado por _ antes de palavra reservada (_se) não deve emitir TokenType.SE
+        lexer_kw = Lexer("_se = 10")
+        tokens_kw = lexer_kw.tokenizar()
+        self.assertEqual(len(lexer_kw.erros), 1)
+        self.assertNotIn(TokenType.SE, [t.tipo for t in tokens_kw])
+
+        # Número com letras coladas (123abc) deve gerar erro léxico
+        lexer2 = Lexer("x = 123abc;")
+        lexer2.tokenizar()
+        self.assertEqual(len(lexer2.erros), 1, "Deveria rejeitar número seguido de letras sem espaço (123abc)")
+        self.assertIn("identificador ou número malformado '123abc'", lexer2.erros[0])
 
     def test_operadores_relacionais_e_atribuicao(self):
         fonte = "== != <= >= = < >"

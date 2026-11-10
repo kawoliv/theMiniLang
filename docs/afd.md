@@ -15,7 +15,6 @@ Esta documentação descreve formalmente o **Analisador Léxico (Scanner)** da l
 $$\text{dígito} \to [0\text{-}9]$$
 $$\text{letra} \to [a\text{-}zA\text{-}ZáàâãéêíóôõúçÁÀÂÃÉÊÍÓÔÕÚÇ]$$
 $$\text{sublinhado} \to \_$$
-$$\text{letra\_ou\_sublinhado} \to \text{letra} \mid \text{sublinhado}$$
 $$\text{caractere\_ident} \to \text{letra} \mid \text{dígito} \mid \text{sublinhado}$$
 $$\text{espaço\_em\_branco} \to [\ \backslash t\backslash r\backslash n]$$
 $$\text{comentário} \to \#[\text{^\backslash n}]*$$
@@ -45,7 +44,7 @@ $$\text{comentário} \to \#[\text{^\backslash n}]*$$
 | | `ATE` | `ate` $\mid$ `até` | Limite do laço para/repita |
 | | `PASSO` | `passo` | Incremento opcional do laço |
 | | `REPITA` | `repita` | Início do laço pós-testado |
-| **Identificadores** | `IDENT` | $\text{letra\_ou\_sublinhado} \cdot (\text{caractere\_ident})^*$ | Nomes de variáveis e funções (ex.: `x`, `soma1`, `_contador`) |
+| **Identificadores** | `IDENT` | $\text{letra} \cdot (\text{caractere\_ident})^*$ | Nomes de variáveis e funções (ex.: `x`, `soma1`, `contador_1`) |
 | **Literais Inteiros** | `NUM_INT` | $\text{dígito}^+$ | Sequência de dígitos decimais (ex.: `0`, `42`, `1000`) |
 | **Operadores Aritméticos** | `MAIS` | `+` | Adição |
 | | `MENOS` | `-` | Subtração |
@@ -88,13 +87,15 @@ stateDiagram-v2
     S_COMENT --> S0: \n
 
     %% Identificadores e Palavras Reservadas
-    S0 --> S_IDENT: letra ou '_'
+    S0 --> S_IDENT: letra
+    S0 --> S_ERRO: '_' [Erro léxico: identificador malformado]
     S_IDENT --> S_IDENT: letra, dígito ou '_'
     S_IDENT --> [*]: outro [lookup PALAVRAS_RESERVADAS]
 
     %% Literais Inteiros
     S0 --> S_NUM: dígito
     S_NUM --> S_NUM: dígito
+    S_NUM --> S_ERRO: letra ou '_' [Erro léxico: número malformado]
     S_NUM --> [*]: outro [NUM_INT]
 
     %% Lookahead: Atribuição ou Igual
@@ -174,8 +175,9 @@ Na tabela:
 | **$S_0$ (Inicial)** | ` `, `\t`, `\r` | $S_0$ | Incrementa coluna |
 | | `\n` | $S_0$ | Incrementa linha, coluna $\leftarrow$ 1 |
 | | `#` | $S_{\text{coment}}$ | Consome início do comentário |
-| | `a-z`, `A-Z`, `_`, acentos | $S_{\text{ident}}$ | Inicia identificador/palavra reservada |
+| | `a-z`, `A-Z`, acentos | $S_{\text{ident}}$ | Inicia identificador/palavra reservada |
 | | `0-9` | $S_{\text{num}}$ | Inicia número inteiro |
+| | `_` | $S_{\text{erro}}$ | `[Erro]` identificador malformado (consome sufixo alfanumérico/`_`) |
 | | `=` | $S_{=}$ | Lookahead de 1 caractere |
 | | `!` | $S_{!}$ | Lookahead de 1 caractere |
 | | `<` | $S_{<}$ | Lookahead de 1 caractere |
@@ -191,6 +193,7 @@ Na tabela:
 | **$S_{\text{ident}}$** | `a-z`, `A-Z`, `0-9`, `_`, acentos | $S_{\text{ident}}$ | Continua acumulando lexema |
 | | Outro | $S_0$ `[Recuar]` | Se lexema $\in$ `PALAVRAS_RESERVADAS` $\to$ Palavra Reservada; Senão $\to$ `IDENT` |
 | **$S_{\text{num}}$** | `0-9` | $S_{\text{num}}$ | Continua acumulando dígitos |
+| | `a-z`, `A-Z`, `_`, acentos | $S_{\text{erro}}$ | `[Erro]` identificador ou número malformado (consome sufixo) |
 | | Outro | $S_0$ `[Recuar]` | Aceita: `NUM_INT` |
 | **$S_{=}$** | `=` | Final | Aceita: `IGUAL` (`==`) |
 | | Outro | $S_0$ `[Recuar]` | Aceita: `ATRIB` (`=`) |

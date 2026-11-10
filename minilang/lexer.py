@@ -38,8 +38,8 @@ class Lexer:
         return c
 
     def _e_letra(self, c: str) -> bool:
-        """Letra ou sublinhado que pode INICIAR uma palavra ou identificador (inclui '_' e acentos)."""
-        return c.isalpha() or c == "_"
+        """Apenas letra que pode INICIAR uma palavra ou identificador (conforme edital Seção 4)."""
+        return c.isalpha()
 
     def _e_digito(self, c: str) -> bool:
         """Dígito decimal [0-9]."""
@@ -82,10 +82,19 @@ class Lexer:
         self.tokens.append(Token(tipo, lexema, linha, coluna, valor))
 
     def _ler_numero(self, linha: int, coluna: int) -> None:
-        """Lê dígitos consecutivos e gera um literal inteiro."""
+        """Lê dígitos consecutivos e gera um literal inteiro, rejeitando sufixos como 123abc."""
         inicio = self.pos
         while self._e_digito(self._peek()):
             self._avancar()
+
+        # Se após os dígitos vier imediatamente uma letra ou sublinhado, é erro léxico
+        if self._e_parte_palavra(self._peek()):
+            while self._e_parte_palavra(self._peek()):
+                self._avancar()
+            lexema_invalido = self.fonte[inicio:self.pos]
+            self._adicionar_erro(linha, coluna, f"identificador ou número malformado '{lexema_invalido}'")
+            return
+
         lexema = self.fonte[inicio:self.pos]
         valor = int(lexema)
         self.tokens.append(Token(TokenType.NUM_INT, lexema, linha, coluna, valor))
@@ -119,6 +128,12 @@ class Lexer:
             self._ler_palavra(linha, coluna)
         elif self._e_digito(c):
             self._ler_numero(linha, coluna)
+        elif c == "_":
+            inicio = self.pos
+            while self._e_parte_palavra(self._peek()):
+                self._avancar()
+            lexema_invalido = self.fonte[inicio:self.pos]
+            self._adicionar_erro(linha, coluna, f"identificador malformado '{lexema_invalido}'")
 
         # --- Operadores com Lookahead (1 ou 2 caracteres) ---
         elif c == "=":

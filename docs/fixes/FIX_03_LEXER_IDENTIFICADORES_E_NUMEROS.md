@@ -111,3 +111,32 @@ python -m unittest tests/test_lexer.py -v
 ```
 
 Todos os testes devem passar com `OK`.
+
+---
+
+## 5. Complemento de Implementação (Melhorias e Correções Aplicadas)
+
+Durante a revisão técnica e aplicação deste Fix, foram identificados e corrigidos três pontos adicionais necessários para garantir consistência teórica (*Maximal Munch*), ausência de regressão nos testes existentes e alinhamento documental:
+
+### 5.1. Consumo completo de identificadores iniciados por `_` (Simetria *Maximal Munch*)
+- **O que foi feito:** Em [`minilang/lexer.py`](../../minilang/lexer.py), além de restringir `_e_letra(c)` apenas para `c.isalpha()`, foi adicionado um ramo explícito `elif c == "_":` em `_proximo_token`:
+  ```python
+        elif c == "_":
+            inicio = self.pos
+            while self._e_parte_palavra(self._peek()):
+                self._avancar()
+            lexema_invalido = self.fonte[inicio:self.pos]
+            self._adicionar_erro(linha, coluna, f"identificador malformado '{lexema_invalido}'")
+  ```
+- **Por que foi feito:**
+  1. **Evita poluição de erros léxicos:** Sem esse ramo, o caractere `_` cairia no `else` genérico (`caractere inesperado '_'`) consumindo apenas 1 caractere por vez. Uma entrada como `___x = 10` geraria **3 erros léxicos seguidos** e ainda emitiria `IDENT('x')`.
+  2. **Impede palavras reservadas fantasmas no Parser (M2):** Se o código contivesse `_se = 10;` ou `_var = 10;`, descartar apenas o `_` faria o lexer emitir o restante (`se` ou `var`) como palavra reservada (`TokenType.SE` / `TokenType.VAR`), provocando erros sintáticos falsos em cascata no analisador sintático.
+  3. **Simetria com `_ler_numero` (`123abc`):** Assim como `123abc` é consumido integralmente como um único lexema malformado (`identificador ou número malformado '123abc'`), `_variavel` passa a ser consumido integralmente como `identificador malformado '_variavel'`, mantendo complexidade $O(N)$.
+
+### 5.2. Atualização do teste legado `test_identificadores_e_numeros`
+- **O que foi feito:** Em [`tests/test_lexer.py`](../../tests/test_lexer.py), o caso de teste existente `test_identificadores_e_numeros` utilizava `fonte = "x1 = 42 + _var2"` esperando `0` erros léxicos. O identificador foi atualizado para `var_2`.
+- **Por que foi feito:** Com a proibição de `_` no início de identificadores (Seção 4 do Edital), `_var2` tornou-se inválido; alterar para `var_2` preserva a verificação de que o sublinhado continua válido a partir do segundo caractere sem quebrar a suíte de testes válidos.
+
+### 5.3. Sincronização da documentação formal do AFD (`docs/afd.md` e `docs/nota_M1.md`)
+- **O que foi feito:** Atualizadas as expressões regulares, o diagrama de estados Mermaid e a tabela de transições em [`docs/afd.md`](../afd.md), além do resumo em [`docs/nota_M1.md`](../nota_M1.md).
+- **Por que foi feito:** A documentação do Marco 1 ainda descrevia a expressão regular de `IDENT` iniciando por `letra_ou_sublinhado` (com exemplo `_contador`) e não documentava a transição de erro léxico ao encontrar letras ou `_` imediatamente após dígitos no estado $S_{\text{num}}$.

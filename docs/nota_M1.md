@@ -44,7 +44,7 @@ O módulo léxico é responsável por transformar o fluxo linear de caracteres d
 
 A implementação foi submetida a baterias de testes automatizados e manuais cobrindo:
 1. **Palavras reservadas da base e da Extensão D:** Validação de todos os termos-chave (incluindo variações acentuadas `até`, `senão`, `não`).
-2. **Identificadores e literais inteiros:** Diferenciação correta de nomes de variáveis, dígitos e nomes iniciados por `_`, com cálculo de valor nativo.
+2. **Identificadores e literais inteiros:** Diferenciação correta de nomes de variáveis, dígitos e nomes contendo `_` após a letra inicial, com cálculo de valor nativo e rejeição de tokens malformados (`_var`, `123abc`).
 3. **Operadores compostos e de um caractere:** Reconhecimento exato de `==`, `!=`, `<=`, `>=`, `=`, etc.
 4. **Descarte de comentários e espaços:** Linhas comentadas com `#` e diferentes combinações de espaços/quebras de linha.
 5. **Detecção e formatação de erros:** Padrão `[LÉXICO] Linha L, Coluna C:` para caracteres inválidos e operadores malformados (`!`).
