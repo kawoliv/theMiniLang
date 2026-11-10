@@ -210,9 +210,9 @@ Para consultar as diretrizes de versionamento e a governança do repositório, a
 | 1 | **João Spinola Falcão** | `12723116405` | [`@Falc01`](https://github.com/Falc01) |
 | 2 | **Pedro Adaime Ribeiro** | `12723119338` | [`@pedrobelane`](https://github.com/pedrobelane) |
 | 3 | **Isabelle Maciel dos Santos** | `12723118051` | [`@isabellesmaciel`](https://github.com/isabellesmaciel) |
-| 4 | **Kawan Oliveira** | `—` | [`@kawoliv`](https://github.com/kawoliv) |
-| 5 | **João Guilherme Perrone Hohlenwerger** | `—` | [`@joaohohlenwerger`](https://github.com/joaohohlenwerger) |
-| 6 | **Daniel Costa** | `—` | [`@Danncss`](https://github.com/Danncss) |
+| 4 | **Kawan Oliveira Carneiro** | `12724119606` | [`@kawoliv`](https://github.com/kawoliv) |
+| 5 | **João Guilherme Perrone Hohlenwerger** | `1272328057` | [`@joaohohlenwerger`](https://github.com/joaohohlenwerger) |
+| 6 | **Daniel Costa Santos** | `1272323654` | [`@Danncss`](https://github.com/Danncss) |
 
 ---
 
