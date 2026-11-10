@@ -23,7 +23,7 @@ precedência, associatividade, *dangling else* e recuperação de erros.
 
 ```ebnf
 (* ---------- Estrutura do programa ---------- *)
-programa        ::= "programa" IDENT [ declaracoes ] bloco "fim" "." ;
+programa        ::= "programa" IDENT { declaracoes } bloco "fim" "." ;
 
 declaracoes     ::= "var" declaracao { declaracao } ;
 declaracao      ::= lista_ids ":" tipo ";" ;
@@ -262,7 +262,8 @@ O parser **não para no primeiro erro**. Ele usa duas estratégias:
    e o parser descarta tokens até um **ponto de sincronização**: um `;` (que é consumido) ou um
    token que inicia ou encerra um comando (`se`, `enquanto`, `para`, `repita`, `leia`, `escreva`,
    `{`, `}`, `senão`, `ate`, `fim`). Em seguida retoma a análise normalmente. Nas declarações, a
-   sincronização é feita no `;` ou no `{` que abre o corpo do programa.
+   sincronização é feita no `;`, em um novo `var` ou no `{` que abre o corpo do programa. Um `;`
+   esquecido antes de `var` ou `{` é tratado em nível de frase, sem descartar a declaração.
 2. **Nível de frase para `;` esquecido.** Se falta o `;` e o próximo token já começa um novo comando
    **em outra linha** (ou é `}`/`fim`), o parser registra o erro e age como se o `;` estivesse lá,
    sem descartar nada. Assim, um `;` esquecido gera **um** erro e não esconde o comando seguinte.

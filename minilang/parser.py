@@ -157,8 +157,8 @@ class Parser:
             self._avancar()
 
     def _sincronizar_declaracao(self) -> None:
-        """Modo pânico nas declarações: vai até o ';' (consome) ou o '{' do corpo."""
-        while not self._verifica(T.EOF, T.ABRE_CHAVE, T.FIM):
+        """Modo pânico nas declarações: vai até o ';' (consome), um novo 'var' ou o '{' do corpo."""
+        while not self._verifica(T.EOF, T.ABRE_CHAVE, T.FIM, T.VAR):
             if self._aceita(T.PONTO_VIRGULA):
                 return
             self._avancar()
@@ -183,7 +183,7 @@ class Parser:
         raise self._erro(f"esperado ';' {contexto}, mas encontrado {descrever(atual)}")
 
     # ------------------------------------------------------------------
-    # programa ::= "programa" IDENT [ declaracoes ] bloco "fim" "."
+    # programa ::= "programa" IDENT { declaracoes } bloco "fim" "."
     # ------------------------------------------------------------------
 
     def _programa(self) -> Programa:
@@ -197,7 +197,9 @@ class Parser:
             while not self._verifica(T.VAR, T.ABRE_CHAVE, T.FIM, T.EOF):
                 self._avancar()
 
-        declaracoes = self._declaracoes() if self._verifica(T.VAR) else []
+        declaracoes: list[DeclVar] = []
+        while self._verifica(T.VAR):
+            declaracoes.extend(self._declaracoes())
         corpo = self._corpo_programa()
         self._final_programa()
         return Programa(nome, declaracoes, corpo, linha=inicio.linha, coluna=inicio.coluna)
@@ -257,7 +259,7 @@ class Parser:
         if not self._verifica(T.INTEIRO, T.BOOLEANO):
             raise self._erro(f"esperado um tipo ('inteiro' ou 'booleano'), mas encontrado {descrever(self._atual())}")
         tipo = self._avancar().lexema
-        self._espera_ponto_virgula("ao final da declaração", {T.ABRE_CHAVE}, {T.IDENT})
+        self._espera_ponto_virgula("ao final da declaração", {T.ABRE_CHAVE, T.VAR}, {T.IDENT})
         return [DeclVar(n.lexema, tipo, linha=n.linha, coluna=n.coluna) for n in nomes]
 
     # ------------------------------------------------------------------

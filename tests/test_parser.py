@@ -88,6 +88,24 @@ class TestProgramasValidos(unittest.TestCase):
         self.assertEqual(erros, [])
         self.assertEqual(programa.declaracoes, [])
 
+    def test_multiplos_blocos_var(self):
+        fonte = (
+            "programa teste\n"
+            "var a: inteiro;\n"
+            "var b: booleano;\n"
+            "var c, d: inteiro;\n"
+            "{\n"
+            "    a = 10;\n"
+            "}\n"
+            "fim."
+        )
+        programa, erros = analisar(fonte)
+        self.assertEqual(erros, [])
+        self.assertEqual(
+            [(d.nome, d.tipo) for d in programa.declaracoes],
+            [("a", "inteiro"), ("b", "booleano"), ("c", "inteiro"), ("d", "inteiro")],
+        )
+
     def test_comandos_basicos(self):
         cmds = comandos("leia(x);\nx = x + 1;\nescreva(x, a);\n{ y = 2; }")
         self.assertEqual([type(c) for c in cmds], [Leia, Atribuicao, Escreva, Bloco])
@@ -204,6 +222,20 @@ class TestErrosSintaticos(unittest.TestCase):
         self.assertEqual(erros, ["[SINTÁTICO] Linha 5, Coluna 7: esperado ';' ao final do comando"])
         # O comando seguinte não foi perdido
         self.assertEqual(len(programa.corpo.comandos), 2)
+
+    def test_erro_em_declaracao_nao_engole_var_seguinte(self):
+        fonte = "programa t\nvar x inteiro\nvar y: inteiro;\n{ y = 1; }\nfim."
+        programa, erros = analisar(fonte)
+        self.assertEqual(len(erros), 1)
+        # O modo pânico para no 'var' e 'y' continua declarado
+        self.assertEqual([d.nome for d in programa.declaracoes], ["y"])
+
+    def test_ponto_virgula_esquecido_antes_de_var(self):
+        fonte = "programa t\nvar x: inteiro\nvar y: inteiro;\n{ x = 1; }\nfim."
+        programa, erros = analisar(fonte)
+        self.assertEqual(erros, ["[SINTÁTICO] Linha 2, Coluna 15: esperado ';' ao final da declaração"])
+        # Recuperação em nível de frase: nenhuma declaração é perdida
+        self.assertEqual([d.nome for d in programa.declaracoes], ["x", "y"])
 
     def test_parentese_nao_fechado(self):
         _, erros = analisar(MODELO % "x = (1 + 2;")
