@@ -261,15 +261,16 @@ class TestInicializacao(unittest.TestCase):
 
 class TestExemplos(unittest.TestCase):
     def test_exemplos_validos_sem_erros_semanticos(self):
-        for arquivo in sorted((EXEMPLOS / "validos").glob("*.mlg")):
+        arquivos = sorted(set((EXEMPLOS / "validos").glob("*.ml")).union((EXEMPLOS / "validos").glob("*.mlg")))
+        for arquivo in arquivos:
             with self.subTest(arquivo=arquivo.name):
                 _, _, erros, avisos = analisar(arquivo.read_text(encoding="utf-8"))
                 self.assertEqual(erros, [])
-                if arquivo.name != "avisos_inicializacao.mlg":
+                if not arquivo.name.startswith("avisos_inicializacao."):
                     self.assertEqual(avisos, [])
 
     def test_exemplos_invalidos_semanticos(self):
-        arquivos = sorted((EXEMPLOS / "invalidos").glob("semantico_*.mlg"))
+        arquivos = sorted(set((EXEMPLOS / "invalidos").glob("semantico_*.ml")).union((EXEMPLOS / "invalidos").glob("semantico_*.mlg")))
         self.assertGreaterEqual(len(arquivos), 4)
         for arquivo in arquivos:
             with self.subTest(arquivo=arquivo.name):
@@ -286,16 +287,16 @@ class TestExemplos(unittest.TestCase):
             return subprocess.run([sys.executable, str(RAIZ / "minilang.py"), *args],
                                   capture_output=True, text=True, encoding="utf-8", cwd=RAIZ)
 
-        ok = rodar(str(EXEMPLOS / "validos" / "fatorial.mlg"), "--symbols", "--ast")
+        ok = rodar(str(EXEMPLOS / "validos" / "fatorial.ml"), "--symbols", "--ast")
         self.assertEqual(ok.returncode, 0, ok.stderr)
         self.assertIn("TABELA DE SÍMBOLOS", ok.stdout)
         self.assertIn("Identificador 'fat' : inteiro", ok.stdout)
 
-        falha = rodar(str(EXEMPLOS / "invalidos" / "semantico_tipos.mlg"))
+        falha = rodar(str(EXEMPLOS / "invalidos" / "semantico_tipos.ml"))
         self.assertEqual(falha.returncode, 1)
         self.assertEqual(falha.stderr.count("[SEMÂNTICO]"), 9)
 
-        avisos = rodar(str(EXEMPLOS / "validos" / "avisos_inicializacao.mlg"))
+        avisos = rodar(str(EXEMPLOS / "validos" / "avisos_inicializacao.ml"))
         self.assertEqual(avisos.returncode, 0)          # avisos não impedem a compilação
         self.assertIn("aviso:", avisos.stderr)
 

@@ -61,7 +61,7 @@ def forma(no) -> str:
 
 class TestProgramasValidos(unittest.TestCase):
     def test_aceita_todos_os_exemplos_validos(self):
-        arquivos = sorted((EXEMPLOS / "validos").glob("*.mlg"))
+        arquivos = sorted(set((EXEMPLOS / "validos").glob("*.ml")).union((EXEMPLOS / "validos").glob("*.mlg")))
         self.assertGreaterEqual(len(arquivos), 7)
         for arquivo in arquivos:
             with self.subTest(arquivo=arquivo.name):
@@ -208,7 +208,7 @@ class TestDanglingElse(unittest.TestCase):
 
 class TestErrosSintaticos(unittest.TestCase):
     def test_rejeita_exemplos_invalidos_sintaticos(self):
-        arquivos = sorted((EXEMPLOS / "invalidos").glob("sintatico_*.mlg"))
+        arquivos = sorted(set((EXEMPLOS / "invalidos").glob("sintatico_*.ml")).union((EXEMPLOS / "invalidos").glob("sintatico_*.mlg")))
         self.assertGreaterEqual(len(arquivos), 4)
         for arquivo in arquivos:
             with self.subTest(arquivo=arquivo.name):
@@ -297,7 +297,7 @@ class TestErrosSintaticos(unittest.TestCase):
 
 class TestNavegacaoDaAST(unittest.TestCase):
     def test_filhos_e_visitante(self):
-        programa, _ = analisar((EXEMPLOS / "validos" / "fatorial.mlg").read_text(encoding="utf-8"))
+        programa, _ = analisar((EXEMPLOS / "validos" / "fatorial.ml").read_text(encoding="utf-8"))
 
         class ContaIdentificadores(Visitante):
             def __init__(self):
@@ -321,7 +321,7 @@ class TestNavegacaoDaAST(unittest.TestCase):
 
     def test_cli_imprime_ast(self):
         resultado = subprocess.run(
-            [sys.executable, str(RAIZ / "minilang.py"), str(EXEMPLOS / "validos" / "fatorial.mlg"), "--ast"],
+            [sys.executable, str(RAIZ / "minilang.py"), str(EXEMPLOS / "validos" / "fatorial.ml"), "--ast"],
             capture_output=True, text=True, encoding="utf-8", cwd=RAIZ,
         )
         self.assertEqual(resultado.returncode, 0, resultado.stderr)
@@ -330,7 +330,7 @@ class TestNavegacaoDaAST(unittest.TestCase):
 
     def test_cli_falha_com_erro_sintatico(self):
         resultado = subprocess.run(
-            [sys.executable, str(RAIZ / "minilang.py"), str(EXEMPLOS / "invalidos" / "sintatico_multiplos_erros.mlg")],
+            [sys.executable, str(RAIZ / "minilang.py"), str(EXEMPLOS / "invalidos" / "sintatico_multiplos_erros.ml")],
             capture_output=True, text=True, encoding="utf-8", cwd=RAIZ,
         )
         self.assertEqual(resultado.returncode, 1)

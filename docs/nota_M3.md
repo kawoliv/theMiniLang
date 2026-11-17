@@ -56,9 +56,9 @@ Isabelle Maciel dos Santos (`@isabellesmaciel`)
 ## 4. Como verificar
 
 ```bash
-py minilang.py exemplos/validos/fatorial.mlg --symbols --ast
-py minilang.py exemplos/invalidos/semantico_tipos.mlg          # 9 erros em uma execução
-py minilang.py exemplos/validos/avisos_inicializacao.mlg        # compila, com 2 avisos
+py minilang.py exemplos/validos/fatorial.ml --symbols --ast
+py minilang.py exemplos/invalidos/semantico_tipos.ml          # 9 erros em uma execução
+py minilang.py exemplos/validos/avisos_inicializacao.ml        # compila, com 2 avisos
 py -m unittest discover -s tests -v
 ```
 

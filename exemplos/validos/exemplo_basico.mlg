@@ -1,17 +1,15 @@
-# Exemplo Basico em MiniLang
-programa basico
-var
-  x, y, soma: inteiro;
-  status: booleano;
+programa exemplo_basico
+var n: inteiro;
+var fat: inteiro;
+var i: inteiro;
 {
-  leia(x);
-  leia(y);
-  soma = x + y;
-  status = verdadeiro;
-  se soma >= 10 {
-    escreva(soma);
-  } senao {
-    escreva(0);
+  leia(n);
+  fat = 1;
+  i = n;
+  enquanto i > 1 {
+    fat = fat * i;
+    i = i - 1;
   }
+  escreva(fat);
 }
 fim.

@@ -21,30 +21,30 @@ Conforme exigido pelo **Item 1 do Checklist Oficial da Disciplina**, o compilado
 
 ```bash
 # Execução padrão (análise léxica, sintática e semântica com código de saída 0 ou 1)
-python minilang.py exemplos/validos/fatorial.mlg
+python minilang.py exemplos/validos/fatorial.ml
 
 # Inspeção Léxica (M1 - Exibe a tabela detalhada de tokens reconhecidos)
-python minilang.py exemplos/validos/fatorial.mlg --tokens
+python minilang.py exemplos/validos/fatorial.ml --tokens
 
 # Inspeção Sintática (M2 - Exibe a Árvore Sintática Abstrata - AST navegável)
-python minilang.py exemplos/validos/fatorial.mlg --ast
+python minilang.py exemplos/validos/fatorial.ml --ast
 
 # Inspeção Semântica (M3 - Exibe a Tabela de Símbolos completa com escopos e tipos)
-python minilang.py exemplos/validos/fatorial.mlg --symbols
+python minilang.py exemplos/validos/fatorial.ml --symbols
 
 # Inspeção Combinada (M3 - Exibe a AST anotada com tipos inferidos e a Tabela de Símbolos)
-python minilang.py exemplos/validos/fatorial.mlg --ast --symbols
+python minilang.py exemplos/validos/fatorial.ml --ast --symbols
 
 # Otimização demonstrada (M4 - Constant Folding / Propagação de Constantes)
-python minilang.py exemplos/validos/fatorial.mlg --optimize
+python minilang.py exemplos/validos/fatorial.ml --optimize
 ```
 
-> **Dica (Windows):** Você também pode executar utilizando `py` em vez de `python`. O compilador suporta extensões `.mlg` e `.ml`.
+> **Dica (Windows):** Você também pode executar utilizando `py` em vez de `python`. O compilador suporta extensões `.ml` e `.mlg`.
 
 ### Execução Alternativa via Módulo Python
 
 ```bash
-python -m minilang exemplos/validos/fatorial.mlg --ast
+python -m minilang exemplos/validos/fatorial.ml --ast
 ```
 
 ---
@@ -78,7 +78,7 @@ A **MiniLang** é uma linguagem imperativa estruturada com tipagem estática e s
 | **Comentários** | Caractere `#` até o final da linha (comentário de linha única, descartado pelo analisador léxico). |
 | **Padrão de Erros** | Todas as fases reportam: **`[FASE] Linha L, Coluna C: Descrição objetiva`**. |
 
-### Exemplo de Código MiniLang Válido (`.mlg` / `.ml`)
+### Exemplo de Código MiniLang Válido (`.ml` / `.mlg`)
 ```pascal
 # Calculo de Fatorial em MiniLang
 programa fatorial

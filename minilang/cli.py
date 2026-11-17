@@ -53,9 +53,9 @@ def _criar_argumentos() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="minilang",
         description="Compilador MiniLang — UNIFACS 2026.2 (Prof. Daniel Santana)",
-        epilog="Exemplo: py minilang.py exemplos/validos/fatorial.mlg --ast",
+        epilog="Exemplo: py minilang.py exemplos/validos/fatorial.ml --ast",
     )
-    parser.add_argument("arquivo", nargs="?", help="Caminho do código-fonte MiniLang (.mlg ou .ml)")
+    parser.add_argument("arquivo", nargs="?", help="Caminho do código-fonte MiniLang (.ml ou .mlg)")
     parser.add_argument("--tokens", action="store_true", help="Exibe a tabela de tokens (M1)")
     parser.add_argument("--ast", action="store_true", help="Exibe a Árvore Sintática Abstrata anotada com tipos (M2/M3)")
     parser.add_argument("--symbols", action="store_true", help="Exibe a Tabela de Símbolos (M3)")

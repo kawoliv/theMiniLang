@@ -122,7 +122,7 @@ Todo nó `Expressao` recebe no campo `tipo` o tipo inferido (`inteiro`, `boolean
 A opção `--ast` mostra a árvore já anotada:
 
 ```
-└── valor: Binaria '*' : inteiro  [10:15]          (py minilang.py exemplos/validos/fatorial.mlg --ast)
+└── valor: Binaria '*' : inteiro  [10:15]          (py minilang.py exemplos/validos/fatorial.ml --ast)
     ├── esq: Identificador 'fat' : inteiro  [10:11]
     └── dir: Identificador 'i' : inteiro  [10:17]
 ```

@@ -213,4 +213,4 @@ O analisador léxico da MiniLang implementa **recuperação de erros não-panico
    - Formato oficial: `[LÉXICO] Linha L, Coluna C: Descrição detalhada`;
    - Registrado via classe `LexicalError` sem interromper abruptamente a análise.
 2. **Avanço**: O caractere causador do erro é descartado/consumido e o scanner retorna imediatamente ao estado inicial $S_0$ para continuar processando os tokens subsequentes.
-3. Isso possibilita reportar múltiplos erros em uma única passagem pelo código-fonte (conforme demonstrado no caso de teste `caractere_invalido.mlg`).
+3. Isso possibilita reportar múltiplos erros em uma única passagem pelo código-fonte (conforme demonstrado no caso de teste `caractere_invalido.ml`).

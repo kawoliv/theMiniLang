@@ -35,7 +35,7 @@ Isabelle Maciel dos Santos (`@isabellesmaciel`)
 - **Relacionais não associativos:** `a < b < c` é rejeitado com uma mensagem que sugere `e`.
 - **Dangling else:** o `senão` fica com o `se` mais próximo, porque `_condicional` consome o `senão`
   logo após o `então` (escolha gulosa). Isso está documentado com as duas árvores possíveis em
-  `gramatica.md` §6 e coberto por teste e por `exemplos/validos/dangling_else.mlg`.
+  `gramatica.md` §6 e coberto por teste e por `exemplos/validos/dangling_else.ml`.
 - **AST enxuta e anotável:** sem nós de pontuação; todo nó guarda linha e coluna; expressões têm o
   campo `tipo`, reservado para o M3. `var a, b: inteiro;` gera um `DeclVar` por variável, o que
   prepara a tabela de símbolos.
@@ -51,13 +51,13 @@ Isabelle Maciel dos Santos (`@isabellesmaciel`)
 - **Anti-cascata:** erros repetidos na mesma posição são suprimidos, e as condições de `se` e
   `enquanto` se recuperam localmente.
 - **Erros léxicos não interrompem o parser:** os dois tipos de erro aparecem juntos. Exemplo:
-  `exemplos/invalidos/sintatico_multiplos_erros.mlg` gera 7 erros em uma execução.
+  `exemplos/invalidos/sintatico_multiplos_erros.ml` gera 7 erros em uma execução.
 
 ## 4. Como verificar
 
 ```bash
-py minilang.py exemplos/validos/dangling_else.mlg --ast
-py minilang.py exemplos/invalidos/sintatico_multiplos_erros.mlg
+py minilang.py exemplos/validos/dangling_else.ml --ast
+py minilang.py exemplos/invalidos/sintatico_multiplos_erros.ml
 py -m unittest discover -s tests -v
 ```
 

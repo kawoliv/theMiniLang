@@ -12,7 +12,7 @@ Equipe:
     - Isabelle Maciel dos Santos
 
 Uso:
-    py minilang.py <arquivo.mlg> [--tokens] [--ast]
+    py minilang.py <arquivo.ml> [--tokens] [--ast]
 
 A lógica da linha de comando fica em minilang/cli.py.
 """

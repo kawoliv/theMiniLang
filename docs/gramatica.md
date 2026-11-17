@@ -212,7 +212,7 @@ se a > 0 {
   escreva(2);
 ```
 
-Os dois casos estão em [`exemplos/validos/dangling_else.mlg`](../exemplos/validos/dangling_else.mlg)
+Os dois casos estão em [`exemplos/validos/dangling_else.ml`](../exemplos/validos/dangling_else.ml)
 e no teste `test_dangling_else_associa_ao_se_mais_proximo`.
 
 ---
