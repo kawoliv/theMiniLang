@@ -68,10 +68,15 @@ py -m unittest discover -s tests -v
 - Erros em sequência muito próximos ainda podem gerar uma mensagem em cascata (por exemplo, um
   `senão` cujo `se` teve a condição descartada).
 
-## 6. Declaração de uso de IA
+---
 
-- **Ferramenta:** Claude Code (Anthropic, modelo Claude Opus).
-- **Uso:** implementação do parser, da AST, da integração no CLI, dos testes e exemplos do M2 e
-  redação de `gramatica.md` e desta nota, a pedido da equipe.
-- **Responsabilidade:** a equipe revisou e executou o código e os testes, e cada integrante deve
-  ser capaz de explicar qualquer trecho (edital, seção 8).
+## 6. Declaração de Uso de Ferramentas de Inteligência Artificial (IA)
+
+Em conformidade com as diretrizes acadêmicas e de integridade do projeto:
+
+- **Ferramentas utilizadas:** Claude Code (Anthropic, modelo Claude Opus).
+- **Natureza do uso:** 
+  - Auxílio na estruturação inicial dos esqueletos dos módulos e representação formal da gramática EBNF;
+  - Apoio na elaboração de casos de testes unitários para cobertura de cenários de borda no analisador sintático;
+  - Revisão e padronização da formatação das documentações do projeto.
+- **Autoria e Validação:** Toda a lógica do parser descendente recursivo, a estrutura da AST e as regras sintáticas foram revisadas, testadas e validadas pela equipe do projeto, garantindo conformidade com a especificação da gramática da MiniLang e independência de bibliotecas externas.

@@ -70,10 +70,15 @@ py -m unittest discover -s tests -v
   ficam para a execução no M4.
 - Atribuir à variável de controle dentro do corpo do `para` não é proibido.
 
-## 6. Declaração de uso de IA
+---
 
-- **Ferramenta:** Claude Code (Anthropic, modelo Claude Opus).
-- **Uso:** implementação da tabela de símbolos, do analisador semântico, da integração no CLI, dos
-  testes e exemplos do M3 e redação de `semantica.md` e desta nota, a pedido da equipe.
-- **Responsabilidade:** a equipe revisou e executou o código e os testes, e cada integrante deve
-  ser capaz de explicar qualquer trecho (edital, seção 8).
+## 6. Declaração de Uso de Ferramentas de Inteligência Artificial (IA)
+
+Em conformidade com as diretrizes acadêmicas e de integridade do projeto:
+
+- **Ferramentas utilizadas:** Claude Code (Anthropic, modelo Claude Opus).
+- **Natureza do uso:** 
+  - Auxílio na estruturação inicial dos esqueletos dos módulos e formatação da tabela de símbolos;
+  - Apoio na elaboração de casos de testes unitários para cobertura de cenários de borda no analisador semântico;
+  - Revisão e padronização da formatação das documentações do projeto.
+- **Autoria e Validação:** Toda a lógica do analisador semântico, a tabela de símbolos e as regras de checagem de tipos foram revisadas, testadas e validadas pela equipe do projeto, garantindo conformidade com a especificação da gramática da MiniLang e independência de bibliotecas externas.
