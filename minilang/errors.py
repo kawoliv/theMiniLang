@@ -46,3 +46,17 @@ class SemanticError:
 
     def __str__(self) -> str:
         return f"[SEMÂNTICO] Linha {self.linha}, Coluna {self.coluna}: {self.mensagem}"
+
+
+class ExecutionError(Exception):
+    """Erro em tempo de execução (M4) com linha, coluna e mensagem."""
+
+    def __init__(self, linha: int, coluna: int, mensagem: str):
+        super().__init__(mensagem)
+        self.linha = linha
+        self.coluna = coluna
+        self.mensagem = mensagem
+
+    def __str__(self) -> str:
+        return f"[EXECUÇÃO] Linha {self.linha}, Coluna {self.coluna}: {self.mensagem}"
+
