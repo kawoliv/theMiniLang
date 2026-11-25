@@ -20,16 +20,16 @@ Isabelle Maciel dos Santos (`@isabellesmaciel`)
 | Interpretador direto da AST (`Interpretador(Visitante)`) | [`minilang/interpretador.py`](../minilang/interpretador.py) |
 | Erro `[EXECUÇÃO] Linha L, Coluna C: ...` (`ExecutionError`) | [`minilang/errors.py`](../minilang/errors.py) |
 | CLI: execução padrão, `--run`, `--trace`, prompt `[LEIA]` e tabela de memória | [`minilang/cli.py`](../minilang/cli.py) |
-| 31 testes automatizados do Back-End (120 testes no total da suíte) | [`tests/test_interpretador.py`](../tests/test_interpretador.py) |
-| *[A PREENCHER: Módulo de Otimização (`--optimize`)]* | *[A PREENCHER: `minilang/otimizador.py`]* |
-| *[A PREENCHER: Testes automatizados de Otimização]* | *[A PREENCHER: `tests/test_otimizador.py`]* |
+| 31 testes automatizados do Back-End | [`tests/test_interpretador.py`](../tests/test_interpretador.py) |
+| Módulo de Otimização (`Otimizador(Visitante)` com Constant Folding e LICM, flag `--optimize`) | [`minilang/otimizador.py`](../minilang/otimizador.py) |
+| 10 testes automatizados de Otimização (130 testes no total da suíte) | [`tests/test_otimizador.py`](../tests/test_otimizador.py) |
 
 ## 2. Cobertura da rubrica
 
 | Critério | Como |
 |---|---|
 | Back-end funcional (4,0) | `Interpretador(Visitante)` executa toda a linguagem base e a Extensão D sobre a AST anotada |
-| Otimização demonstrada (1,5) | *[A PREENCHER PELO RESPONSÁVEL DA OTIMIZAÇÃO: Constant Folding ativado via `--optimize`]* |
+| Otimização demonstrada (1,5) | Dobradura de Constantes (*Constant Folding*) e Movimentação de Invariantes de Laço (LICM) ativadas via `--optimize` |
 | Relatório Técnico de 6 a 10 páginas (2,5) | Consolidado a partir de `afd.md`, `gramatica.md`, `semantica.md` e `backend.md` |
 | Apresentação e arguição oral + domínio individual (2,0) | Modo interativo com `[LEIA]`, rastreamento `--trace` e tabela de estado final da memória |
 
@@ -53,12 +53,11 @@ Isabelle Maciel dos Santos (`@isabellesmaciel`)
   prompt indicando o nome e o tipo esperado da variável, e o final da execução apresenta a tabela
   com o estado final da memória. A flag `--trace` detalha cada passo executado com linha e coluna.
 
-### 3.2 Otimização (`--optimize`) — *[A Preencher]*
+### 3.2 Otimização (`--optimize`)
 
-> **[ESPAÇO RESERVADO — INTEGRANTE RESPONSÁVEL PELA OTIMIZAÇÃO]**
-> - Descrever aqui as decisões de implementação do otimizador (ex.: *Constant Folding* bottom-up na AST,
->   tratamento de divisão por zero constante durante a otimização, preservação de anotações de tipo
->   e posição, e integração com a flag `--optimize` no `cli.py`).
+- **Dobradura de Constantes (*Constant Folding*):** percorre a AST *bottom-up* substituindo expressões constantes por nós `Numero` ou `Booleano` com `linha`, `coluna` e `tipo` preservados, utilizando `dividir_inteiro` e `modulo_inteiro` de `minilang/interpretador.py`. Expressões com divisão ou módulo por zero não são dobradas para preservar o erro `[EXECUÇÃO]` em runtime, e operadores `e`/`ou` aplicam curto-circuito constante.
+- **Movimentação de Código Invariante de Laço (LICM):** analisa laços `enquanto`, `para` e `repita ... ate` do nível mais externo ao mais interno, movendo subexpressões compostas que não dependem de variáveis modificadas no laço (e sem divisão/módulo inseguros) para temporárias `_inv_k` calculadas uma única vez antes do laço.
+- **Preservação da AST original e integração com a CLI:** `otimizar(programa)` atua sobre `copy.deepcopy(programa)` e é aplicada em `minilang/cli.py` antes de `--ast` e da execução no interpretador quando `--optimize` é utilizado.
 
 ## 4. Como verificar
 
@@ -77,9 +76,9 @@ py minilang.py exemplos/validos/expressoes.ml
 # Exibição da AST anotada seguida de execução
 py minilang.py exemplos/validos/exemplo_para.ml --ast --run
 
-# [A PREENCHER: Verificação da otimização antes/depois]
-# py minilang.py exemplos/validos/expressoes.ml --ast
-# py minilang.py exemplos/validos/expressoes.ml --ast --optimize
+# Verificação da otimização antes/depois e execução otimizada
+py minilang.py exemplos/validos/expressoes.ml --ast
+py minilang.py exemplos/validos/expressoes.ml --ast --optimize --run
 
 # Suíte completa de testes automatizados (M1 a M4)
 py -m unittest discover -s tests -v
@@ -90,7 +89,7 @@ py -m unittest discover -s tests -v
 - Como a MiniLang base possui apenas escopo global de variáveis, `self.memoria` utiliza um único
   dicionário plano de execução.
 - Operações de entrada via `leia` leem um valor por linha (`\n`).
-- *[A PREENCHER: Limitações conhecidas do módulo de otimização, ex.: dobradura restrita a subexpressões constantes sem análise de fluxo de dados interblocos]*.
+- A dobradura de constantes e a movimentação de invariantes de laço operam sobre subexpressões individuais sem análise de fluxo de dados interblocos ou propagação de cópias entre comandos sequenciais.
 
 ---
 

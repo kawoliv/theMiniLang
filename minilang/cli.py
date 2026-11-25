@@ -20,6 +20,7 @@ from minilang.arvore import formatar_arvore
 from minilang.errors import ExecutionError
 from minilang.interpretador import interpretar
 from minilang.lexer import Lexer
+from minilang.otimizador import otimizar
 from minilang.parser import analisar_sintaxe
 from minilang.semantico import analisar_semantica
 from minilang.tokens import TokenType, categoria
@@ -62,7 +63,7 @@ def _criar_argumentos() -> argparse.ArgumentParser:
     parser.add_argument("--tokens", action="store_true", help="Exibe a tabela de tokens (M1)")
     parser.add_argument("--ast", action="store_true", help="Exibe a Árvore Sintática Abstrata anotada com tipos (M2/M3)")
     parser.add_argument("--symbols", action="store_true", help="Exibe a Tabela de Símbolos (M3)")
-    parser.add_argument("--optimize", action="store_true", help="Aplica otimizações (M4, ainda não implementado)")
+    parser.add_argument("--optimize", action="store_true", help="Aplica otimizações na AST (dobradura de constantes e LICM - M4)")
     parser.add_argument("--run", action="store_true", help="Executa o programa mesmo quando --tokens, --ast ou --symbols forem usados")
     parser.add_argument("--trace", action="store_true", help="Exibe o passo a passo da execução e o estado final da memória (M4)")
     parser.add_argument("--version", action="version", version=VERSAO)
@@ -106,12 +107,13 @@ def main(argv=None) -> None:
     # --- M3: análise semântica (a AST está completa) ---
     tabela, erros_semanticos, avisos = analisar_semantica(programa)
 
+    if args.optimize and not erros_semanticos:
+        programa = otimizar(programa)
+
     if args.ast:
         print(formatar_arvore(programa))
     if args.symbols:
         print(tabela.formatar())
-    if args.optimize:
-        print("[AVISO] --optimize ainda não está disponível (M4).", file=sys.stderr)
 
     sys.stdout.flush()                      # mantém a ordem entre stdout e stderr no terminal
     for aviso in avisos:

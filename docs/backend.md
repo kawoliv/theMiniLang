@@ -173,15 +173,41 @@ final da memória ao encerrar o programa.
 
 ---
 
-## 6. Otimização de Código (`--optimize`) — *[A Preencher]*
+## 6. Otimização de Código (`--optimize`)
 
-> **[ESPAÇO RESERVADO — INTEGRANTE RESPONSÁVEL PELA OTIMIZAÇÃO]**
->
-> Esta seção deve documentar a implementação da otimização do Marco 4:
-> - **Técnica escolhida:** *Constant Folding* (dobradura de constantes) e/ou propagação de constantes sobre a AST.
-> - **Módulo:** `minilang/otimizador.py` (sugestão: classe `Otimizador(Visitante)` recebendo e devolvendo `Programa`).
-> - **Contrato com o Interpretador:**
->   - Importar `dividir_inteiro` e `modulo_inteiro` de `minilang.interpretador` para manter a mesma semântica aritmética.
->   - Preservar os campos `linha`, `coluna` e `tipo` nos nós `Numero` e `Booleano` gerados pela dobradura.
->   - Em `minilang/cli.py`, aplicar a transformação antes da impressão de `--ast` e antes da chamada a `interpretar(programa)`, permitindo comparar a árvore antes e depois com `--ast` vs. `--ast --optimize`.
-> - **Exemplos de antes e depois (`--ast` vs. `--ast --optimize`):** *(inserir comparativo aqui)*.
+O módulo [`minilang/otimizador.py`](../minilang/otimizador.py) implementa a classe `Otimizador(Visitante)` e a função de atalho `otimizar(programa)`, acionadas pela flag `--optimize` na CLI. A transformação opera sobre uma cópia profunda (`copy.deepcopy`) da AST anotada, preservando os atributos `linha`, `coluna` e `tipo` dos nós e mantendo a árvore original intacta.
+
+### 6.1 Técnicas Implementadas
+
+1. **Dobradura de Constantes (*Constant Folding*)**:
+   - Percorre a AST em pós-ordem (*bottom-up*), avaliando em tempo de compilação expressões unárias (`-`, `não`) e binárias (`+`, `-`, `*`, `/`, `%`, `<`, `<=`, `>`, `>=`, `==`, `!=`, `e`, `ou`) cujos operandos são literais (`Numero` ou `Booleano`).
+   - Reutiliza `dividir_inteiro` e `modulo_inteiro` de [`minilang/interpretador.py`](../minilang/interpretador.py) para garantir semântica idêntica à do interpretador.
+   - Respeita o curto-circuito lógico (`falso e <expr>` $\to$ `falso`; `verdadeiro ou <expr>` $\to$ `verdadeiro`) e **não** dobra divisões ou módulos por zero (`b == 0`), preservando o erro `[EXECUÇÃO]` em tempo de execução.
+
+2. **Movimentação de Código Invariante de Laço (*Loop-Invariant Code Motion — LICM*)**:
+   - Analisa os laços `enquanto`, `para` e `repita ... ate` do nível mais externo para o mais interno.
+   - Coleta o conjunto de variáveis modificadas dentro do laço (`Atribuicao`, `Leia` e a variável de controle do `Para`).
+   - Toda subexpressão composta (`Binaria` ou `Unaria`) que não lê nenhuma variável modificada no laço — e que é segura para especulação (não contém `/` nem `%` com divisor não constante ou zero) — é extraída para uma variável temporária única (`_inv_0`, `_inv_1`, ...) declarada em `Programa.declaracoes` e calculada **uma única vez** imediatamente antes do início do laço.
+   - No corpo ou na condição do laço, a subexpressão é substituída por `Identificador('_inv_k')`, reduzindo o trabalho por iteração sem alterar o comportamento caso o laço execute zero vezes.
+
+### 6.2 Integração com a CLI (`--ast` vs. `--ast --optimize`)
+
+Em [`minilang/cli.py`](../minilang/cli.py), quando `--optimize` é informado e não há erros semânticos, `otimizar(programa)` é executado **antes** da impressão de `--ast` e **antes** da chamada a `interpretar(programa)`.
+
+**Exemplo de Dobradura de Constantes (`exemplos/validos/expressoes.ml`):**
+- Sem `--optimize`: `x = 10 - 3 - 2;` gera `Binaria '-' (Binaria '-' (Numero 10, Numero 3), Numero 2)`.
+- Com `--optimize`: reduzido diretamente para `Numero 5 : inteiro  [7:14]`.
+
+**Exemplo de LICM em laço `para`:**
+```pascal
+# Antes da otimização: (a * b + c) é recalculado a cada iteração
+para i = 1 ate 5 {
+  soma = soma + (a * b + c);
+}
+
+# Depois da otimização (equivalente na AST):
+_inv_0 = a * b + c;
+para i = 1 ate 5 {
+  soma = soma + _inv_0;
+}
+```
