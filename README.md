@@ -2,7 +2,7 @@
 
 Projeto prático de avaliação semestral (**A3**) da disciplina de **Teoria da Computação e Compiladores (0006964)**.  
 **Universidade Salvador (UNIFACS)** — Período Letivo: **2026.2**  
-**Docente**: Prof. Daniel Santana  
+**Docente**: Prof. Lucas dos Santos Ferreira 
 **Valor da Avaliação**: 40 Pontos | **Carga Horária**: 160h  
 
 ---
